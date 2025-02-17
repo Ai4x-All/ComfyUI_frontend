@@ -166,4 +166,7 @@ if (props.node.droppable) {
 :deep(.editable-text span) {
   word-break: break-all;
 }
+.tree-node {
+  color: var(--custom-node-label-color);
+}
 </style>

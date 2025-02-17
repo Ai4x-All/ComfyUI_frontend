@@ -63,7 +63,8 @@ const modelPreviewStyle = ref<CSSProperties>({
 })
 
 const settingStore = useSettingStore()
-const sidebarLocation = computed<'left' | 'right'>(() =>
+// abcd <'left' | 'right' | 'float'>
+const sidebarLocation = computed(() =>
   settingStore.get('Comfy.Sidebar.Location')
 )
 

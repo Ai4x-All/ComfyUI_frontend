@@ -54,7 +54,7 @@
       "bg-color": "#DDD",
       "comfy-menu-bg": "#F5F5F5",
       "comfy-menu-hover-bg": "#ccc",
-      "comfy-menu-secondary-bg": "#EEE",
+      "comfy-menu-secondary-bg": "238, 238, 238",
       "comfy-input-bg": "#C9C9C9",
       "input-text": "#222",
       "descrip-text": "#444",
@@ -67,7 +67,9 @@
       "content-fg": "#222",
       "content-hover-bg": "#adadad",
       "content-hover-fg": "#222",
-      "bar-shadow": "rgba(16, 16, 16, 0.25) 0 0 0.5rem"
+      "bar-shadow": "rgba(16, 16, 16, 0.25) 0 0 0.5rem",
+      "custom-title-color": "#222",
+      "custom-inputtext-pla": ""
     }
   }
 }

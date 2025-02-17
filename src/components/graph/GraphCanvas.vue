@@ -6,19 +6,31 @@
     v-if="comfyAppReady && betaMenuEnabled && !workspaceStore.focusMode"
   >
     <template #side-bar-panel>
-      <SideToolbar />
+      <SideToolbar v-if="sidebarLocation !== 'float'" />
     </template>
     <template #bottom-panel>
       <BottomPanel />
     </template>
     <template #graph-canvas-panel>
-      <SecondRowWorkflowTabs
+      <!-- <SecondRowWorkflowTabs
         v-if="workflowTabsPosition === 'Topbar (2nd-row)'"
         class="pointer-events-auto"
-      />
+      /> -->
       <GraphCanvasMenu v-if="canvasMenuEnabled" class="pointer-events-auto" />
     </template>
   </LiteGraphCanvasSplitterOverlay>
+
+  <div
+    v-if="
+      comfyAppReady &&
+      betaMenuEnabled &&
+      !workspaceStore.focusMode &&
+      sidebarLocation === 'float'
+    "
+  >
+    <SideToolbarCustom />
+  </div>
+
   <TitleEditor />
   <GraphCanvasMenu v-if="!betaMenuEnabled && canvasMenuEnabled" />
   <canvas
@@ -43,7 +55,7 @@ import NodeTooltip from '@/components/graph/NodeTooltip.vue'
 import TitleEditor from '@/components/graph/TitleEditor.vue'
 import NodeSearchboxPopover from '@/components/searchbox/NodeSearchBoxPopover.vue'
 import SideToolbar from '@/components/sidebar/SideToolbar.vue'
-import SecondRowWorkflowTabs from '@/components/topbar/SecondRowWorkflowTabs.vue'
+import SideToolbarCustom from '@/components/sidebar/SideToolbarCustom.vue'
 import { useCanvasDrop } from '@/composables/useCanvasDrop'
 import { useContextMenuTranslation } from '@/composables/useContextMenuTranslation'
 import { useCopy } from '@/composables/useCopy'
@@ -82,6 +94,10 @@ const canvasMenuEnabled = computed(() =>
   settingStore.get('Comfy.Graph.CanvasMenu')
 )
 const tooltipEnabled = computed(() => settingStore.get('Comfy.EnableTooltips'))
+
+const sidebarLocation = computed(() =>
+  settingStore.get('Comfy.Sidebar.Location')
+)
 
 watchEffect(() => {
   nodeDefStore.showDeprecated = settingStore.get('Comfy.Node.ShowDeprecated')
@@ -161,6 +177,12 @@ useCanvasDrop(canvasRef)
 useLitegraphSettings()
 
 onMounted(async () => {
+  if (canvasRef.value) {
+    canvasRef.value.addEventListener('contextmenu', (event) => {
+      event.preventDefault()
+    })
+  }
+
   useGlobalLitegraph()
   useContextMenuTranslation()
   useCopy()

@@ -94,8 +94,7 @@ function getModuleName(id: string): string {
   return fileName.replace(/\.\w+$/, '') // Remove file extension
 }
 
-const DEV_SERVER_COMFYUI_URL =
-  process.env.DEV_SERVER_COMFYUI_URL || 'http://127.0.0.1:8188'
+const DEV_SERVER_COMFYUI_URL = 'http://172.16.211.150:8188/' // process.env.DEV_SERVER_COMFYUI_URL || 'http://127.0.0.1:8188'
 
 export default defineConfig({
   base: '',

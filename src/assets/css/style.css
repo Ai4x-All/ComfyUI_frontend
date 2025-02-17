@@ -586,6 +586,10 @@ audio.comfy-audio.empty-audio-widget {
 .p-tree-node-content {
   padding: var(--comfy-tree-explorer-item-padding) !important;
 }
+/*addc*/
+.p-tree-node-icon,.p-tree-node-toggle-button {
+  color: var(--custom-node-label-color)!important;
+}
 
 /* Load3d styles */
 .comfy-load-3d,
@@ -624,3 +628,10 @@ audio.comfy-audio.empty-audio-widget {
   width: calc(100vw - env(titlebar-area-width, 100vw));
 }
 /* End of [Desktop] Electron window specific styles */
+
+.comfyui-body-float .comfy-vue-side-bar-container {
+  background: transparent;
+}
+.comfyui-body-float ::v-deep(.p-tree) {
+  background: transparent!important;
+}

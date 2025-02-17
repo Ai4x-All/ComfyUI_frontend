@@ -63,6 +63,8 @@ const formItem = computed(() => {
 const settingStore = useSettingStore()
 const settingValue = computed(() => settingStore.get(props.setting.id))
 const updateSettingValue = (value: any) => {
+  // console.log(props.setting)
+  // console.log(value)
   settingStore.set(props.setting.id, value)
 }
 </script>

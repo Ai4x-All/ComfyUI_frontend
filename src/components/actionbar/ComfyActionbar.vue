@@ -15,7 +15,6 @@
 <script lang="ts" setup>
 import {
   useDraggable,
-  useElementBounding,
   useEventBus,
   useEventListener,
   useLocalStorage,
@@ -23,7 +22,7 @@ import {
 } from '@vueuse/core'
 import { clamp } from 'lodash'
 import Panel from 'primevue/panel'
-import { Ref, computed, inject, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 import { useSettingStore } from '@/stores/settingStore'
 
@@ -176,21 +175,24 @@ const adjustMenuPosition = () => {
 
 useEventListener(window, 'resize', adjustMenuPosition)
 
-const topMenuRef = inject<Ref<HTMLDivElement | null>>('topMenuRef')
-const topMenuBounds = useElementBounding(topMenuRef)
+// add
+// const topMenuRef = inject<Ref<HTMLDivElement | null>>('topMenuRef')
+// const topMenuBounds = useElementBounding(topMenuRef)
+
 const overlapThreshold = 20 // pixels
 const isOverlappingWithTopMenu = computed(() => {
-  if (!panelRef.value) {
-    return false
-  }
-  const { height } = panelRef.value.getBoundingClientRect()
-  const actionbarBottom = y.value + height
-  const topMenuBottom = topMenuBounds.bottom.value
+  return false // add
+  // if (!panelRef.value) {
+  //   return false
+  // }
+  // const { height } = panelRef.value.getBoundingClientRect()
+  // const actionbarBottom = y.value + height
+  // const topMenuBottom = topMenuBounds.bottom.value
 
-  const overlapPixels =
-    Math.min(actionbarBottom, topMenuBottom) -
-    Math.max(y.value, topMenuBounds.top.value)
-  return overlapPixels > overlapThreshold
+  // const overlapPixels =
+  //   Math.min(actionbarBottom, topMenuBottom) -
+  //   Math.max(y.value, topMenuBounds.top.value)
+  // return overlapPixels > overlapThreshold
 })
 
 watch(isDragging, (newIsDragging) => {

@@ -248,7 +248,8 @@
     "name": "Emplacement de la barre latérale",
     "options": {
       "left": "gauche",
-      "right": "droite"
+      "right": "droite",
+      "float": "float"
     }
   },
   "Comfy_Sidebar_Size": {

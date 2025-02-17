@@ -32,6 +32,14 @@
       </template>
     </SplitButton>
     <BatchCountEdit />
+
+    <!-- addc 工作流、编辑 -->
+    <CommandMenubar />
+    <!-- addc 日志 -->
+    <BottomPanelToggleButton />
+    <!-- addc 隐藏 -->
+    <HideMenuButton />
+
     <ButtonGroup class="execution-actions flex flex-nowrap">
       <Button
         v-tooltip.bottom="$t('menu.interrupt')"
@@ -64,6 +72,10 @@ import SplitButton from 'primevue/splitbutton'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+// addc
+import BottomPanelToggleButton from '@/components/topbar/BottomPanelToggleButton.vue'
+import CommandMenubar from '@/components/topbar/CommandMenubar.vue'
+import HideMenuButton from '@/components/topbar/HideMenuButton.vue'
 import { useCommandStore } from '@/stores/commandStore'
 import {
   useQueuePendingTaskCountStore,
@@ -126,5 +138,10 @@ const queuePrompt = (e: MouseEvent) => {
 .comfyui-queue-button :deep(.p-splitbutton-dropdown) {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+/* addc */
+.flex-shrink-0 {
+  background: #fff;
 }
 </style>

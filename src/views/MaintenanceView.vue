@@ -46,12 +46,13 @@
         </div>
 
         <!-- Tasks -->
-        <TaskListPanel
+        <!-- addc -->
+        <!-- <TaskListPanel
           class="border-neutral-700 border-solid border-x-0 border-y"
           :filter
           :displayAsList
           :isRefreshing
-        />
+        /> -->
 
         <!-- Actions -->
         <div class="flex justify-between gap-4 flex-row">
@@ -94,7 +95,6 @@ import { watch } from 'vue'
 
 import RefreshButton from '@/components/common/RefreshButton.vue'
 import StatusTag from '@/components/maintenance/StatusTag.vue'
-import TaskListPanel from '@/components/maintenance/TaskListPanel.vue'
 import TerminalOutputDrawer from '@/components/maintenance/TerminalOutputDrawer.vue'
 import { t } from '@/i18n'
 import { useMaintenanceTaskStore } from '@/stores/maintenanceTaskStore'
