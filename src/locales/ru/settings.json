@@ -251,7 +251,8 @@
     "name": "Расположение боковой панели",
     "options": {
       "left": "слева",
-      "right": "справа"
+      "right": "справа",
+      "float": "浮层"
     }
   },
   "Comfy_Sidebar_Size": {

@@ -1,7 +1,9 @@
 import { config } from 'dotenv'
 import { copy } from 'fs-extra'
 
-config()
+// updateCustom
+// config()
+config({ path: `.env.production` }) // 或 config({ path: `.env.${process.env.NODE_ENV}` })
 
 const sourceDir = './dist'
 // eslint-disable-next-line no-undef

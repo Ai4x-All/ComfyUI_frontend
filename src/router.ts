@@ -43,14 +43,29 @@ const router = createRouter({
           name: 'GraphView',
           component: () => import('@/views/GraphView.vue'),
           beforeEnter: async (to, from, next) => {
-            const userStore = useUserStore()
-            await userStore.initialize()
-            if (userStore.needsLogin) {
-              next('/user-select')
-            } else {
-              next()
-            }
+            next()
+            /*try {
+              const userStore = useUserStore()
+              await userStore.initialize()
+              if (userStore.needsLogin) {
+                next('/404')
+                // next('/user-select')
+              } else {
+                next()
+              }
+            }catch (error) {
+              if (to.path !== '/error') {
+                next('/error')
+              } else {
+                next('/error')
+              }
+            }*/
           }
+        },
+        {
+          path: 'NetError',
+          name: 'NetError',
+          component: () => import('@/views/NetError.vue')
         },
         {
           path: 'user-select',

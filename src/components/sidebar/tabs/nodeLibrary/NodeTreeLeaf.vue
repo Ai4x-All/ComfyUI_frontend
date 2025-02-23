@@ -62,7 +62,8 @@ const isBookmarked = computed(() =>
   nodeBookmarkStore.isBookmarked(nodeDef.value)
 )
 const settingStore = useSettingStore()
-const sidebarLocation = computed<'left' | 'right'>(() =>
+// updateCustom
+const sidebarLocation = computed<'left' | 'right' | 'float'>(() =>
   settingStore.get('Comfy.Sidebar.Location')
 )
 

@@ -111,11 +111,11 @@ onMounted(() => {
 }
 
 .comfyui-menu.dropzone {
-  background: var(--p-highlight-background);
+  /* background: var(--p-highlight-background); updateCustom */
 }
 
 .comfyui-menu.dropzone-active {
-  background: var(--p-highlight-background-focus);
+  /* background: var(--p-highlight-background-focus); updateCustom */
 }
 
 :deep(.p-menubar-item-label) {
@@ -126,5 +126,9 @@ onMounted(() => {
   font-size: 1.2em;
   user-select: none;
   cursor: default;
+}
+/* updateCustom */
+.flex-shrink-0 {
+  color: #000;
 }
 </style>

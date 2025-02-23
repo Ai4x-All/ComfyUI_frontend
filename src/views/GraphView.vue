@@ -1,13 +1,17 @@
 <template>
   <div class="comfyui-body grid h-screen w-screen overflow-hidden">
+    <div v-show="showTopMenu">
+      <Actionbar />
+    </div>
     <div class="comfyui-body-top" id="comfyui-body-top">
-      <TopMenubar v-if="useNewMenu === 'Top'" />
+      <!--<TopMenubar v-if="useNewMenu === 'Top'" />-->
     </div>
     <div class="comfyui-body-bottom" id="comfyui-body-bottom">
-      <TopMenubar v-if="useNewMenu === 'Bottom'" />
+      <!--<TopMenubar v-if="useNewMenu === 'Bottom'" />-->
     </div>
     <div class="comfyui-body-left" id="comfyui-body-left" />
     <div class="comfyui-body-right" id="comfyui-body-right" />
+    <div class="comfyui-body-float" id="comfyui-body-float" />
     <div class="graph-canvas-container" id="graph-canvas-container">
       <GraphCanvas @ready="onGraphReady" />
     </div>
@@ -28,6 +32,7 @@ import { useI18n } from 'vue-i18n'
 
 import BrowserTabTitle from '@/components/BrowserTabTitle.vue'
 import MenuHamburger from '@/components/MenuHamburger.vue'
+import Actionbar from '@/components/actionbarCustom/ComfyActionbar.vue' // updateCustom
 import UnloadWindowConfirmDialog from '@/components/dialog/UnloadWindowConfirmDialog.vue'
 import GraphCanvas from '@/components/graph/GraphCanvas.vue'
 import GlobalToast from '@/components/toast/GlobalToast.vue'
@@ -67,11 +72,19 @@ const executionStore = useExecutionStore()
 const colorPaletteStore = useColorPaletteStore()
 const queueStore = useQueueStore()
 
+/* updateCustom */
+const menuSetting = computed(() => settingStore.get('Comfy.UseNewMenu'))
+const workspaceState = useWorkspaceStore()
+const betaMenuEnabled = computed(() => menuSetting.value !== 'Disabled')
+const showTopMenu = computed(
+  () => betaMenuEnabled.value && !workspaceState.focusMode
+)
+
 watch(
   () => colorPaletteStore.completedActivePalette,
   (newTheme) => {
     const DARK_THEME_CLASS = 'dark-theme'
-    if (newTheme.light_theme) {
+    if (newTheme.light_theme || newTheme.name === 'custom') { // updateCustom
       document.body.classList.remove(DARK_THEME_CLASS)
     } else {
       document.body.classList.add(DARK_THEME_CLASS)
@@ -318,5 +331,8 @@ const onGraphReady = () => {
   z-index: 1000;
   display: flex;
   flex-direction: column;
+}
+.comfyui-body-float {
+  height: 100%;
 }
 </style>

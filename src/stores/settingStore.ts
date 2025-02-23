@@ -97,6 +97,11 @@ export const useSettingStore = defineStore('setting', () => {
   function get<K extends keyof Settings>(key: K): Settings[K] {
     // Clone the value when returning to prevent external mutations
     return _.cloneDeep(settingValues.value[key] ?? getDefaultValue(key))
+    if (key === 'Comfy.Sidebar.Location') {
+      return 'float' //  _.cloneDeep('float')
+    } else {
+      return _.cloneDeep(settingValues.value[key] ?? getDefaultValue(key))
+    }
   }
 
   /**

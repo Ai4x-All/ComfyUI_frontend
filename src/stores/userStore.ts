@@ -24,6 +24,7 @@ export const useUserStore = defineStore('user', () => {
   const needsLogin = computed(
     () => !currentUserId.value && isMultiUserServer.value
   )
+
   const users = computed<User[]>(() =>
     Object.entries(userConfig.value?.users ?? {}).map(([userId, username]) => ({
       userId,
@@ -37,11 +38,21 @@ export const useUserStore = defineStore('user', () => {
   const initialized = computed(() => userConfig.value !== null)
 
   /**
-   * Initialize the user store.
+   * Initialize the user store. updateCustom
    */
   async function initialize() {
-    userConfig.value = await api.getUserConfig()
+    const data = await api.getUserConfig()
+
+    userConfig.value = data
     currentUserId.value = localStorage['Comfy.userId']
+    const users = Object.entries(data?.users ?? {}).map(([userId, username]) => ({
+      userId,
+      username
+    }))
+
+    if (users && users.length) {
+      await login({ userId: users[0].userId, username: users[0].username })
+    }
   }
 
   /**

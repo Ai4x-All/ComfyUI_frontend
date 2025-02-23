@@ -1,7 +1,8 @@
 <template>
+  <!--  updateCustom -->
   <div
-    class="comfy-vue-side-bar-container flex flex-col h-full group/sidebar-tab"
     :class="props.class"
+    class="comfy-vue-side-bar-container flex flex-col h-full group/sidebar-tab"
   >
     <div class="comfy-vue-side-bar-header">
       <Toolbar class="border-x-0 border-t-0 rounded-none px-2 py-1 min-h-8">

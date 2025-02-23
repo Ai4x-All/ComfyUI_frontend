@@ -251,7 +251,8 @@
     "name": "Sidebar location",
     "options": {
       "left": "left",
-      "right": "right"
+      "right": "right",
+      "float": "float"
     }
   },
   "Comfy_Sidebar_Size": {

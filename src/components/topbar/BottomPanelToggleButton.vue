@@ -5,8 +5,9 @@
     text
     :aria-label="$t('menu.toggleBottomPanel')"
     @click="bottomPanelStore.toggleBottomPanel"
-    v-tooltip="{ value: $t('menu.toggleBottomPanel'), showDelay: 300 }"
+    v-tooltip.bottom="{ value: $t('menu.toggleBottomPanel'), showDelay: 300 }"
   >
+   <!--updateCustom-->
     <template #icon>
       <i-material-symbols:dock-to-bottom
         v-if="bottomPanelStore.bottomPanelVisible"

@@ -45,13 +45,13 @@
           </div>
         </div>
 
-        <!-- Tasks -->
-        <TaskListPanel
+        <!-- Tasks updateCustom -->
+        <!--<TaskListPanel
           class="border-neutral-700 border-solid border-x-0 border-y"
           :filter
           :displayAsList
           :isRefreshing
-        />
+        />-->
 
         <!-- Actions -->
         <div class="flex justify-between gap-4 flex-row">

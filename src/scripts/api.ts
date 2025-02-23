@@ -159,6 +159,7 @@ export class ComfyApi extends EventTarget {
    */
   user: string
   socket: WebSocket | null = null
+  token: string | null = null // 添加 token 字段
 
   reportedUnknownMessageTypes = new Set<string>()
 
@@ -169,17 +170,39 @@ export class ComfyApi extends EventTarget {
     this.api_base = location.pathname.split('/').slice(0, -1).join('/')
     console.log('Running on', this.api_host)
     this.initialClientId = sessionStorage.getItem('clientId')
+    this.token = sessionStorage.getItem('token') || null
+  }
+
+  // 设置 token
+  setToken(token: string) {
+    this.token = token
+    sessionStorage.setItem('token', token)
   }
 
   internalURL(route: string): string {
+    /*const url = new URL(this.api_base + '/internal' + route, `http${window.location.protocol === 'https:' ? 's' : ''}://${this.api_host}`)
+    if (this.token) {
+      url.searchParams.append('token', this.token)
+    }
+    return url.toString()*/
     return this.api_base + '/internal' + route
   }
 
   apiURL(route: string): string {
+    /*const url = new URL(this.api_base + '/api' + route, `http${window.location.protocol === 'https:' ? 's' : ''}://${this.api_host}`)
+    if (this.token) {
+      url.searchParams.append('token', this.token)
+    }
+    return url.toString()*/
     return this.api_base + '/api' + route
   }
 
   fileURL(route: string): string {
+    /*const url = new URL(this.api_base + route, `http${window.location.protocol === 'https:' ? 's' : ''}://${this.api_host}`)
+    if (this.token) {
+      url.searchParams.append('token', this.token)
+    }
+    return url.toString()*/
     return this.api_base + route
   }
 
@@ -200,6 +223,9 @@ export class ComfyApi extends EventTarget {
       options.headers.set('Comfy-User', this.user)
     } else {
       options.headers['Comfy-User'] = this.user
+    }
+    if (this.token) {
+      options.headers['Authorization'] = `Bearer ${this.token}`
     }
     return fetch(this.apiURL(route), options)
   }
@@ -278,9 +304,18 @@ export class ComfyApi extends EventTarget {
     if (existingSession) {
       existingSession = '?clientId=' + existingSession
     }
+
+    /*const url = new URL(`ws${window.location.protocol === 'https:' ? 's' : ''}://${this.api_host}${this.api_base}/ws${existingSession}`)
+    if (this.token) {
+      url.searchParams.append('token', this.token)
+    }
+    this.socket = new WebSocket(url.toString())
+    */
+
     this.socket = new WebSocket(
       `ws${window.location.protocol === 'https:' ? 's' : ''}://${this.api_host}${this.api_base}/ws${existingSession}`
     )
+
     this.socket.binaryType = 'arraybuffer'
 
     this.socket.addEventListener('open', () => {
@@ -292,16 +327,20 @@ export class ComfyApi extends EventTarget {
 
     this.socket.addEventListener('error', () => {
       if (this.socket) this.socket.close()
+      // this.#disconnect()
+
       if (!isReconnect && !opened) {
         this.#pollQueue()
       }
     })
 
     this.socket.addEventListener('close', () => {
+      // this.#disconnect()
+      
       setTimeout(() => {
         this.socket = null
         this.#createSocket(true)
-      }, 300)
+      }, 3000)
       if (opened) {
         this.dispatchCustomEvent('status', null)
         this.dispatchCustomEvent('reconnecting')
@@ -367,7 +406,17 @@ export class ComfyApi extends EventTarget {
             case 'logs':
             case 'b_preview':
               this.dispatchCustomEvent(msg.type, msg.data)
-              break
+              break;
+            // case 'customType': {
+            //   // 新的消息类型处理逻辑
+            //   const { text, imagePreview } = msg.data;
+            //   console.log('Received custom message:', text);
+            //   if (imagePreview) {
+            //     const imageBlob = new Blob([imagePreview], { type: 'image/jpeg' });
+            //     this.dispatchCustomEvent('custom_event_with_image', imageBlob);
+            //   }
+            //   break;
+            // }
             default:
               if (this.#registered.has(msg.type)) {
                 // Fallback for custom types - calls super direct.
@@ -384,6 +433,14 @@ export class ComfyApi extends EventTarget {
         console.warn('Unhandled message:', event.data, error)
       }
     })
+  }
+
+  // 断开连接
+  #disconnect() {
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
   }
 
   /**
@@ -884,7 +941,9 @@ export class ComfyApi extends EventTarget {
    * @returns The custom nodes i18n data
    */
   async getCustomNodesI18n(): Promise<Record<string, any>> {
-    return (await axios.get(this.apiURL('/i18n'))).data
+    return (await axios.get(this.apiURL('/i18n'), { headers: {
+      Authorization: `Bearer ${this.token}`
+   }})).data
   }
 }
 

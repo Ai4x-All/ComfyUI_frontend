@@ -251,7 +251,8 @@
     "name": "사이드바 위치",
     "options": {
       "left": "왼쪽",
-      "right": "오른쪽"
+      "right": "오른쪽",
+      "float": "浮层"
     }
   },
   "Comfy_Sidebar_Size": {

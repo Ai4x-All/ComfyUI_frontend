@@ -554,7 +554,7 @@ const zSettings = z.record(z.any()).and(
       'Comfy.Pointer.DoubleClickTime': z.number(),
       'Comfy.PreviewFormat': z.string(),
       'Comfy.PromptFilename': z.boolean(),
-      'Comfy.Sidebar.Location': z.enum(['left', 'right']),
+      'Comfy.Sidebar.Location': z.enum(['left', 'right', 'float']),
       'Comfy.Sidebar.Size': z.enum(['small', 'normal']),
       'Comfy.SwitchUser': z.any(),
       'Comfy.SnapToGrid.GridSize': z.number(),

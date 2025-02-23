@@ -64,6 +64,8 @@ body {
   border: none;
   box-sizing: border-box;
   font-size: var(--comfy-textarea-font-size);
+  outline: none;
+  border-radius: 4px;
 }
 
 .comfy-markdown {
@@ -592,6 +594,10 @@ audio.comfy-audio.empty-audio-widget {
 .p-tree-node-content {
   padding: var(--comfy-tree-explorer-item-padding) !important;
 }
+/*addc*/
+.p-tree-node-icon,.p-tree-node-toggle-button {
+  color: var(--custom-node-label-color)!important;
+}
 
 /* Load3d styles */
 .comfy-load-3d,
@@ -630,3 +636,44 @@ audio.comfy-audio.empty-audio-widget {
   width: calc(100vw - env(titlebar-area-width, 100vw));
 }
 /* End of [Desktop] Electron window specific styles */
+
+.comfyui-body-float .comfy-vue-side-bar-container {
+  background: transparent;
+}
+.comfyui-body-float ::v-deep(.p-tree) {
+  background: transparent!important;
+}
+
+/* 删除图标样式 */
+.litegraph .node .delete-icon,
+.litegraph .group .delete-icon {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  z-index: 999;
+}
+
+.litegraph .node .delete-icon::before,
+.litegraph .group .delete-icon::before,
+.litegraph .node .delete-icon::after,
+.litegraph .group .delete-icon::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 2px;
+  background-color: #FF0000;
+}
+
+.litegraph .node .delete-icon::before,
+.litegraph .group .delete-icon::before {
+  transform: rotate(45deg);
+}
+
+.litegraph .node .delete-icon::after,
+.litegraph .group .delete-icon::after {
+  transform: rotate(-45deg);
+}

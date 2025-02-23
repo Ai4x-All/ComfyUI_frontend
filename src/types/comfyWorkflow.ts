@@ -97,7 +97,7 @@ const zNodeOutput = z
 
 const zNodeInput = z
   .object({
-    name: zNodeInputName,
+    name: z.string(),
     type: zDataType,
     link: z.number().nullable().optional(),
     slot_index: zSlotIndex.optional()

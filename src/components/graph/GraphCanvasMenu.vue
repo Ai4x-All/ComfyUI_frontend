@@ -5,7 +5,7 @@
     <Button
       severity="secondary"
       icon="pi pi-plus"
-      v-tooltip.left="t('graphCanvasMenu.zoomIn')"
+      v-tooltip.top="t('graphCanvasMenu.zoomIn')"
       :aria-label="$t('graphCanvasMenu.zoomIn')"
       @mousedown="repeat('Comfy.Canvas.ZoomIn')"
       @mouseup="stopRepeat"
@@ -13,7 +13,7 @@
     <Button
       severity="secondary"
       icon="pi pi-minus"
-      v-tooltip.left="t('graphCanvasMenu.zoomOut')"
+      v-tooltip.top="t('graphCanvasMenu.zoomOut')"
       :aria-label="$t('graphCanvasMenu.zoomOut')"
       @mousedown="repeat('Comfy.Canvas.ZoomOut')"
       @mouseup="stopRepeat"
@@ -21,13 +21,13 @@
     <Button
       severity="secondary"
       icon="pi pi-expand"
-      v-tooltip.left="t('graphCanvasMenu.fitView')"
+      v-tooltip.top="t('graphCanvasMenu.fitView')"
       :aria-label="$t('graphCanvasMenu.fitView')"
       @click="() => commandStore.execute('Comfy.Canvas.FitView')"
     />
     <Button
       severity="secondary"
-      v-tooltip.left="
+      v-tooltip.top="
         t(
           'graphCanvasMenu.' +
             (canvasStore.canvas?.read_only ? 'panMode' : 'selectMode')
@@ -51,7 +51,7 @@
     <Button
       severity="secondary"
       :icon="linkHidden ? 'pi pi-eye-slash' : 'pi pi-eye'"
-      v-tooltip.left="t('graphCanvasMenu.toggleLinkVisibility')"
+      v-tooltip.top="t('graphCanvasMenu.toggleLinkVisibility')"
       :aria-label="$t('graphCanvasMenu.toggleLinkVisibility')"
       @click="() => commandStore.execute('Comfy.Canvas.ToggleLinkVisibility')"
       data-testid="toggle-link-visibility-button"
@@ -97,7 +97,7 @@ const stopRepeat = () => {
 <style scoped>
 .p-buttongroup-vertical {
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column;  updateCustom */
   border-radius: var(--p-button-border-radius);
   overflow: hidden;
   border: 1px solid var(--p-panel-border-color);

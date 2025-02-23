@@ -1,21 +1,29 @@
 <template>
   <div>
-    <IconField>
-      <Button
+    <IconField style="position: relative">
+      <!-- updateCustom -->
+      <!-- <Button
         v-if="filterIcon"
         class="p-inputicon filter-button"
         :icon="filterIcon"
         text
         severity="contrast"
         @click="$emit('showFilter', $event)"
-      />
+      /> -->
       <InputText
         class="search-box-input w-full"
         @input="handleInput"
         :modelValue="modelValue"
         :placeholder="placeholder"
       />
-      <InputIcon v-if="!modelValue" :class="icon" />
+      <!-- updateCustom -->
+      <!-- <InputIcon v-if="!modelValue" :class="icon" /> -->
+      <img
+        v-if="!modelValue"
+        class="search-icon"
+        src="@/assets/images/search_icon.png"
+        alt="Search"
+      />
       <Button
         v-if="modelValue"
         class="p-inputicon clear-button"
@@ -45,7 +53,7 @@
 import { debounce } from 'lodash'
 import Button from 'primevue/button'
 import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
+// import InputIcon from 'primevue/inputicon' // updateCustom
 import InputText from 'primevue/inputtext'
 
 import type { SearchFilter } from './SearchFilterChip.vue'
@@ -97,5 +105,17 @@ const clearSearch = () => {
 
 .p-button.p-inputicon {
   @apply p-0 w-auto border-none;
+}
+:deep(.p-inputtext)::placeholder {
+  color: var(--custom-inputtext-pla);
+}
+.search-icon {
+  position: absolute;
+  width: 1.8rem;
+  height: 1.8rem;
+  object-fit: contain;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>

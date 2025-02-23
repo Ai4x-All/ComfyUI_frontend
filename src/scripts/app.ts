@@ -126,6 +126,7 @@ export class ComfyApp {
   bodyLeft: HTMLElement
   bodyRight: HTMLElement
   bodyBottom: HTMLElement
+  bodyFloat: HTMLElement // updateCustom
   canvasContainer: HTMLElement
   menu: ComfyAppMenu
   bypassBgColor: string
@@ -211,6 +212,7 @@ export class ComfyApp {
     this.bodyRight = $el('div.comfyui-body-right')
     this.bodyBottom = $el('div.comfyui-body-bottom')
     this.canvasContainer = $el('div.graph-canvas-container')
+    this.bodyFloat = $el('div.comfyui-body-float') // updateCustom
 
     this.menu = new ComfyAppMenu(this)
     this.bypassBgColor = '#FF00FF'
@@ -781,6 +783,9 @@ export class ComfyApp {
     this.bodyRight = document.getElementById('comfyui-body-right')
     this.bodyBottom = document.getElementById('comfyui-body-bottom')
     this.canvasContainer = document.getElementById('graph-canvas-container')
+
+    // updateCustom
+    this.bodyFloat = document.getElementById('comfyui-body-bottom')
 
     this.canvasEl = canvasEl
     this.resizeCanvas()

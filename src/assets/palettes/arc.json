@@ -71,7 +71,10 @@
       "content-fg": "#fff",
       "content-hover-bg": "#2b2f38",
       "content-hover-fg": "#fff",
-      "bar-shadow": "rgba(8, 8, 8, 0.75) 0 0 0.5rem"
+      "bar-shadow": "rgba(8, 8, 8, 0.75) 0 0 0.5rem",
+      "custom-title-color": "#fff",
+      "custom-node-label-color": "",
+      "custom-inputtext-pla": ""
     }
   }
 }

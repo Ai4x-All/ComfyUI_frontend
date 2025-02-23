@@ -68,12 +68,12 @@ export const CORE_KEYBINDINGS: Keybinding[] = [
     },
     commandId: 'Comfy.OpenWorkflow'
   },
-  {
-    combo: {
-      key: 'Backspace'
-    },
-    commandId: 'Comfy.ClearWorkflow'
-  },
+  // {
+  //   combo: {
+  //     key: 'Backspace'
+  //   },
+  //   commandId: 'Comfy.ClearWorkflow'
+  // },
   {
     combo: {
       key: 'g',

@@ -40,6 +40,9 @@ export class ResultItemImpl {
   format?: string
   frame_rate?: number
 
+  // updateCustom
+  prompt: TaskPrompt
+
   constructor(obj: Record<string, any>) {
     this.filename = obj.filename ?? ''
     this.subfolder = obj.subfolder ?? ''
@@ -50,6 +53,8 @@ export class ResultItemImpl {
 
     this.format = obj.format
     this.frame_rate = obj.frame_rate
+
+    this.prompt = obj.prompt // customUpdate
   }
 
   get urlParams(): URLSearchParams {
@@ -76,8 +81,14 @@ export class ResultItemImpl {
     return api.apiURL('/viewvideo?' + this.urlParams)
   }
 
+  // customUpdate
+  get promptId(): string {
+    return this.prompt[1]
+  }
+
+  // customUpdate
   get url(): string {
-    return api.apiURL('/view?' + this.urlParams)
+    return api.apiURL('/view?' + this.urlParams + `&prompt_id=${this.promptId}` )
   }
 
   get urlWithTimestamp(): string {

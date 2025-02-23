@@ -251,7 +251,8 @@
     "name": "侧边栏位置",
     "options": {
       "left": "左侧",
-      "right": "右侧"
+      "right": "右侧",
+      "float": "浮层"
     }
   },
   "Comfy_Sidebar_Size": {

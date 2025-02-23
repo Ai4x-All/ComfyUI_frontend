@@ -12,8 +12,9 @@
         @click="onTabClick(tab)"
       />
       <div class="side-tool-bar-end">
-        <SidebarLogoutIcon v-if="userStore.isMultiUserServer" />
-        <SidebarThemeToggleIcon />
+        <!--updateCustom-->
+        <!--<SidebarLogoutIcon v-if="userStore.isMultiUserServer" />
+        <SidebarThemeToggleIcon />-->
         <SidebarSettingsToggleIcon />
       </div>
     </nav>

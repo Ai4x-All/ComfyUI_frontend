@@ -6,19 +6,31 @@
     v-if="comfyAppReady && betaMenuEnabled && !workspaceStore.focusMode"
   >
     <template #side-bar-panel>
-      <SideToolbar />
+      <SideToolbar v-if="sidebarLocation !== 'float'" />
     </template>
     <template #bottom-panel>
       <BottomPanel />
     </template>
     <template #graph-canvas-panel>
-      <SecondRowWorkflowTabs
+     <!--  <SecondRowWorkflowTabs
         v-if="workflowTabsPosition === 'Topbar (2nd-row)'"
         class="pointer-events-auto"
-      />
+      />-->
       <GraphCanvasMenu v-if="canvasMenuEnabled" class="pointer-events-auto" />
     </template>
   </LiteGraphCanvasSplitterOverlay>
+
+  <div
+    v-if="
+      comfyAppReady &&
+      betaMenuEnabled &&
+      !workspaceStore.focusMode &&
+      sidebarLocation === 'float'
+    "
+  >
+    <SideToolbarCustom />
+  </div>
+
   <TitleEditor />
   <GraphCanvasMenu v-if="!betaMenuEnabled && canvasMenuEnabled" />
   <canvas
@@ -33,10 +45,21 @@
   </SelectionOverlay>
   <NodeTooltip v-if="tooltipEnabled" />
   <NodeBadge />
+<!--  <rightClickMenusPopover ref="customRightClickMenuRef" />-->
+  <div
+    v-for="node in nodes"
+    :key="node.id"
+    style=""
+    class="node_style"
+    :style="nodeStyle(node)"
+  >
+    <DeleteIcon :nodeId="node.id" @delete-node="deleteNode" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { LGraphCanvas, LiteGraph, LGraphNode } from '@comfyorg/litegraph'
 
 import LiteGraphCanvasSplitterOverlay from '@/components/LiteGraphCanvasSplitterOverlay.vue'
 import BottomPanel from '@/components/bottomPanel/BottomPanel.vue'
@@ -47,7 +70,11 @@ import SelectionOverlay from '@/components/graph/SelectionOverlay.vue'
 import SelectionToolbox from '@/components/graph/SelectionToolbox.vue'
 import TitleEditor from '@/components/graph/TitleEditor.vue'
 import NodeSearchboxPopover from '@/components/searchbox/NodeSearchBoxPopover.vue'
+
+import rightClickMenusPopover from '../rightClickMenusPopover/rightClickMenusPopover.vue'
+
 import SideToolbar from '@/components/sidebar/SideToolbar.vue'
+import SideToolbarCustom from '@/components/sidebar/SideToolbarCustom.vue' // updateCustom
 import SecondRowWorkflowTabs from '@/components/topbar/SecondRowWorkflowTabs.vue'
 import { useChainCallback } from '@/composables/functional/useChainCallback'
 import { useCanvasDrop } from '@/composables/useCanvasDrop'
@@ -60,7 +87,7 @@ import { useWorkflowPersistence } from '@/composables/useWorkflowPersistence'
 import { CORE_SETTINGS } from '@/constants/coreSettings'
 import { i18n } from '@/i18n'
 import { api } from '@/scripts/api'
-import { app as comfyApp } from '@/scripts/app'
+import { app, app as comfyApp } from '@/scripts/app'
 import { ChangeTracker } from '@/scripts/changeTracker'
 import { IS_CONTROL_WIDGET, updateControlWidgetLabel } from '@/scripts/widgets'
 import { useColorPaletteService } from '@/services/colorPaletteService'
@@ -88,6 +115,11 @@ const canvasMenuEnabled = computed(() =>
   settingStore.get('Comfy.Graph.CanvasMenu')
 )
 const tooltipEnabled = computed(() => settingStore.get('Comfy.EnableTooltips'))
+
+const sidebarLocation = computed(() =>
+  settingStore.get('Comfy.Sidebar.Location')
+)
+
 const selectionToolboxEnabled = computed(() =>
   settingStore.get('Comfy.Canvas.SelectionToolbox')
 )
@@ -119,7 +151,7 @@ watch(
   () => {
     if (!canvasStore.canvas) return
 
-    for (const n of comfyApp.graph.nodes) {
+  for (const n of comfyApp.graph.nodes) {
       if (!n.widgets) continue
       for (const w of n.widgets) {
         if (w[IS_CONTROL_WIDGET]) {
@@ -196,11 +228,6 @@ onMounted(async () => {
 
   comfyAppReady.value = true
 
-  comfyApp.canvas.onSelectionChange = useChainCallback(
-    comfyApp.canvas.onSelectionChange,
-    () => canvasStore.updateSelectedItems()
-  )
-
   // Load color palette
   colorPaletteStore.customPalettes = settingStore.get(
     'Comfy.CustomColorPalettes'
@@ -219,6 +246,70 @@ onMounted(async () => {
     }
   )
 
+  // updateCustom
+  updateNodes()
+
   emit('ready')
 })
+
+const nodes = ref<LGraphNode[]>([])
+
+// 监听画布中的节点变化
+const updateNodes = () => {
+  if (comfyApp.graph) {
+    nodes.value = [...comfyApp.graph.nodes]
+  }
+}
+
+// 画布初始化后监听节点变化
+watch(() => comfyAppReady.value, (ready) => {
+  if (ready) {
+    comfyApp.graph.onNodeAdded = () => {
+      updateNodes()
+    }
+    comfyApp.graph.onNodeRemoved = () => {
+      updateNodes()
+    }
+
+    // 监听画布变化更新节点位置（删除图层位置错乱）
+    comfyApp.canvas.onDrawBackground = () => {
+      updateNodes()
+    }
+  }
+})
+
+// 格式化坐标
+const nodeStyle =(node)=> {
+  const scale = canvasStore.canvas?.ds?.scale ?? 1
+  const width = node.width * scale
+  const height = LiteGraph.NODE_TITLE_HEIGHT * scale
+  const [left, top] = comfyApp.canvasPosToClientPos(node.pos)
+
+  return {
+    left: `${left + width - height}px`,
+    width: `${height}px`,
+    height: `${height}px`,
+    top: `${top - height}px`,
+    padding: `${5 * scale}px`
+  }
+}
+
+// 删除节点
+const deleteNode = (nodeId: number) => {
+  const node = comfyApp.graph.getNodeById(nodeId)
+  if (node) {
+    comfyApp.graph.remove(node)
+    updateNodes()
+  }
+}
 </script>
+
+<style scoped>
+.node_style {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  cursor: pointer
+}
+</style>
