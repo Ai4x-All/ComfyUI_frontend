@@ -6,8 +6,12 @@ import Icons from 'unplugin-icons/vite'
 import Components from 'unplugin-vue-components/vite'
 import { Plugin, defineConfig } from 'vite'
 import type { UserConfigExport } from 'vitest/config'
+import mkcert from 'vite-plugin-mkcert'
 
-dotenv.config()
+// dotenv.config()
+// 根据当前环境加载相应的 .env 文件
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 const SHOULD_MINIFY = process.env.ENABLE_MINIFY === 'true'
@@ -103,11 +107,11 @@ export default defineConfig({
     host: VITE_REMOTE_DEV ? '0.0.0.0' : undefined,
     proxy: {
       '/internal': {
-        target: DEV_SERVER_COMFYUI_URL
+        target: process.env.DEV_SERVER_COMFYUI_URL, // DEV_SERVER_COMFYUI_URL
       },
 
       '/api': {
-        target: DEV_SERVER_COMFYUI_URL,
+        target: process.env.DEV_SERVER_COMFYUI_URL,
         // Return empty array for extensions API as these modules
         // are not on vite's dev server.
         bypass: (req, res, options) => {
@@ -119,12 +123,12 @@ export default defineConfig({
       },
 
       '/ws': {
-        target: DEV_SERVER_COMFYUI_URL,
+        target: process.env.DEV_SERVER_COMFYUI_URL,
         ws: true
       },
 
       '/workflow_templates': {
-        target: DEV_SERVER_COMFYUI_URL
+        target: process.env.DEV_SERVER_COMFYUI_URL,
       },
 
       '/testsubrouteindex': {
@@ -137,6 +141,7 @@ export default defineConfig({
   plugins: [
     vue(),
     comfyAPIPlugin(),
+    mkcert(),
 
     Icons({
       compiler: 'vue3'
@@ -154,19 +159,19 @@ export default defineConfig({
   build: {
     minify: SHOULD_MINIFY ? 'esbuild' : false,
     target: 'es2022',
-    sourcemap: true,
+    sourcemap: IS_DEV, // 只在开发环境中生成 sourcemap, // true,
     rollupOptions: {
       // Disabling tree-shaking
       // Prevent vite remove unused exports
-      treeshake: false
+      treeshake: !IS_DEV, // 在生产环境中启用 treeshake  // false
     }
   },
 
   esbuild: {
-    minifyIdentifiers: false,
-    keepNames: true,
+    minifyIdentifiers: !IS_DEV,
+    keepNames: IS_DEV,
     minifySyntax: SHOULD_MINIFY,
-    minifyWhitespace: SHOULD_MINIFY
+    minifyWhitespace: SHOULD_MINIFY,
   },
 
   test: {
