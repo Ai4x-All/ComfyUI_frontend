@@ -32,7 +32,10 @@
 
     "plugins": [
       {
-        "name": "typescript-strict-plugin"
+        "name": "typescript-strict-plugin",
+        "options": {
+          "enabled": false
+        }
       }
     ]
   },
@@ -42,5 +45,6 @@
     "src/types/**/*.d.ts",
     "tests-ui/**/*",
     "global.d.ts"
-  ]
+  ],
+  "exclude": ["node_modules"]
 }
