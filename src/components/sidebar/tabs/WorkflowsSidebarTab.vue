@@ -29,6 +29,11 @@
         text
       />
     </template>
+    <template #srwtc>
+      <div class="w-auto max-w-full workflow_tabs_container">
+        <WorkflowTabs class="pointer-events-auto" />
+      </div>
+    </template>
     <template #header>
       <SearchBox
         class="workflows-search-box p-2 2xl:p-4"
@@ -306,3 +311,12 @@ onMounted(async () => {
   await workflowBookmarkStore.loadBookmarks()
 })
 </script>
+
+<style>
+.workflow_tabs_container {
+  background: #fff;
+}
+.workflow_tabs_container .status-indicator{
+  color: var(--fg-color);
+}
+</style>

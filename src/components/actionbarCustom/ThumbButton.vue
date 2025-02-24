@@ -1,12 +1,12 @@
 <template>
-  <div class="node_add_icon" @click="handleClick" v-tooltip.bottom="{ value: '缩略图', showDelay: 300 }">
+  <div ref="buttonRef" class="node_add_icon" @click="handleClick" v-tooltip.bottom="{ value: '缩略图', showDelay: 300 }">
     <img :src="ThumbIcon" alt="">
   </div>
 </template>
 
 <script setup lang="ts">
 import ThumbIcon from "@/assets/images/icon_bar_thumb.png"
-import { ref } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 
 const emit = defineEmits(['toggle'])
 const buttonRef = ref<HTMLElement | null>(null)

@@ -12,10 +12,7 @@
       <BottomPanel />
     </template>
     <template #graph-canvas-panel>
-     <!--  <SecondRowWorkflowTabs
-        v-if="workflowTabsPosition === 'Topbar (2nd-row)'"
-        class="pointer-events-auto"
-      />-->
+      <SecondRowWorkflowTabs v-if="workflowTabsPosition === 'Topbar (2nd-row)' && sidebarLocation !== 'float'" class="pointer-events-auto" />
       <GraphCanvasMenu v-if="canvasMenuEnabled" class="pointer-events-auto" />
     </template>
   </LiteGraphCanvasSplitterOverlay>
@@ -40,12 +37,12 @@
     class="w-full h-full touch-none"
   />
   <NodeSearchboxPopover />
-  <SelectionOverlay v-if="selectionToolboxEnabled">
+  <!--<SelectionOverlay v-if="selectionToolboxEnabled">
     <SelectionToolbox />
-  </SelectionOverlay>
+  </SelectionOverlay>-->
   <NodeTooltip v-if="tooltipEnabled" />
   <NodeBadge />
-<!--  <rightClickMenusPopover ref="customRightClickMenuRef" />-->
+  <!--  <rightClickMenusPopover ref="customRightClickMenuRef" />-->
   <div
     v-for="node in nodes"
     :key="node.id"

@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect, nextTick } from 'vue'
 
 import ExtensionSlot from '@/components/common/ExtensionSlot.vue'
 import { useKeybindingStore } from '@/stores/keybindingStore'
@@ -95,8 +95,7 @@ const isCollapsed = ref(false)
 
 const tabs = computed(() => {
   const tabs = workspaceStore.getSidebarTabs()
-  return tabs
-  // return [...tabs, { id: "setting", icon: 'setting', label: "设置", title: "设置", tooltip: "设置", type: 'settings', component: () => {} }]
+  return [...tabs, { id: "setting", icon: 'setting', label: "设置", title: "设置", tooltip: "设置", type: 'settings', component: () => {} }]
 })
 
 const selectedTab = computed(() => workspaceStore.sidebarTab.activeSidebarTab)
@@ -132,16 +131,25 @@ const handleHideScale = () => {
 // 设置默认激活的选项卡
 onMounted(() => {
   if (!workspaceStore.sidebarTab.activeSidebarTabId && tabs.value.length > 0) {
-    workspaceStore.sidebarTab.toggleSidebarTab(tabs.value[0].id)
+    nextTick(() => {
+      workspaceStore.sidebarTab.toggleSidebarTab(tabs.value[0].id)
+    })
   }
 })
 
 // 监听 tabs 变化
-watch(tabs, (newTabs) => {
+/*watch(tabs, (newTabs) => {
   if (!workspaceStore.sidebarTab.activeSidebarTabId && newTabs.length > 0) {
     workspaceStore.sidebarTab.toggleSidebarTab(newTabs[0].id)
   }
-})
+})*/
+
+// 或者直接
+/*watchEffect(() => {
+  if (!workspaceStore.sidebarTab.activeSidebarTabId && tabs.value.length > 0) {
+    workspaceStore.sidebarTab.toggleSidebarTab(tabs.value[0].id)
+  }
+})*/
 </script>
 <style scoped>
 .comfyui-body-float_body {

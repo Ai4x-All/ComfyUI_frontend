@@ -14,15 +14,18 @@
         <span>运行</span>
       </div>
     </div>
-    <div class="flex item-center" :class="{ 'hidden': isHidden, 'hide-animation': isHidden }" :style="containerStyle">
-      <div class="group_icon_container flex item-center justify-between">
-        <AddWorkFlowButton />
-        <ClearWorkFlowButton />
-        <ThumbButton @toggle="handleToggle" />
-        <DragButton ref="dragButtonRef" />
-        <HideAllButton />
+    <div class="collapse_container">
+      <div class="flex item-center" :class="{ 'hidden': isHidden, 'hide-animation': isHidden }" :style="containerStyle">
+        <!--<img class="clip_path_img" :src="clipIcon" alt="">-->
+        <div class="group_icon_container flex item-center justify-between">
+          <AddWorkFlowButton />
+          <ClearWorkFlowButton />
+          <DragButton ref="dragButtonRef" />
+          <ThumbButton @toggle="handleToggle" />
+          <HideAllButton />
+        </div>
+        <img class="clip_path_img" :src="clipIcon" alt="">
       </div>
-      <img class="clip_path_img" :src="clipIcon" alt="">
     </div>
   </div>
 </template>
@@ -110,7 +113,7 @@ const getDragHandle = () => dragButtonRef.value?.dragHandleRef
 defineExpose({ getDragHandle })
 
 const handleToggle = (buttonLeft) => {
-  collapseOffset.value = 100 // buttonLeft
+  collapseOffset.value = buttonLeft
   isCollapsed.value = !isCollapsed.value
   // isHidden.value = true
 }
@@ -224,5 +227,9 @@ const containerStyle = computed(() => ({
 .queue-button-group {
   overflow: hidden;
   transition: width 0.3s;
+}
+
+.collapse_container {
+  overflow: hidden;
 }
 </style>

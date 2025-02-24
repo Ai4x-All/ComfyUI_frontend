@@ -19,6 +19,7 @@
           </div>
         </template>
       </Toolbar>
+      <slot name="srwtc" />
       <slot name="header"></slot>
     </div>
     <!-- h-0 to force scrollpanel to flex-grow -->
