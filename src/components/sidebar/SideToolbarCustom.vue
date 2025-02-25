@@ -95,7 +95,8 @@ const isCollapsed = ref(false)
 
 const tabs = computed(() => {
   const tabs = workspaceStore.getSidebarTabs()
-  return [...tabs, { id: "setting", icon: 'setting', label: "设置", title: "设置", tooltip: "设置", type: 'settings', component: () => {} }]
+  return tabs
+  // return [...tabs, { id: "setting", icon: 'setting', label: "设置", title: "设置", tooltip: "设置", type: 'settings', component: () => {} }]
 })
 
 const selectedTab = computed(() => workspaceStore.sidebarTab.activeSidebarTab)

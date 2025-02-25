@@ -34,9 +34,10 @@ const getCanvasMenuOptions = () => {
   return options
 }
 
+// @ts-expect-error
 LiteGraph.ContextMenu = function (values, options, root, current_submenu, lock) {
   console.log(options.event)
-  const pos = [options.event?.canvasX, options.event?.canvasY]
+  const pos:[number, number] = [options.event?.canvasX, options.event?.canvasY]
   const [left, top] = comfyApp.canvasPosToClientPos(pos)
 
   positionStyle.value = {
