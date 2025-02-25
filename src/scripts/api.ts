@@ -170,13 +170,13 @@ export class ComfyApi extends EventTarget {
     this.api_base = location.pathname.split('/').slice(0, -1).join('/')
     console.log('Running on', this.api_host)
     this.initialClientId = sessionStorage.getItem('clientId')
-    this.token = sessionStorage.getItem('token') || null
+    this.token = localStorage.getItem('token') || null
   }
 
   // 设置 token
   setToken(token: string) {
     this.token = token
-    sessionStorage.setItem('token', token)
+    localStorage.setItem('token', token)
   }
 
   internalURL(route: string): string {
@@ -406,7 +406,7 @@ export class ComfyApi extends EventTarget {
             case 'logs':
             case 'b_preview':
               this.dispatchCustomEvent(msg.type, msg.data)
-              break;
+              break
             // case 'customType': {
             //   // 新的消息类型处理逻辑
             //   const { text, imagePreview } = msg.data;
@@ -438,8 +438,8 @@ export class ComfyApi extends EventTarget {
   // 断开连接
   #disconnect() {
     if (this.socket) {
-      this.socket.close();
-      this.socket = null;
+      this.socket.close()
+      this.socket = null
     }
   }
 
@@ -941,9 +941,13 @@ export class ComfyApi extends EventTarget {
    * @returns The custom nodes i18n data
    */
   async getCustomNodesI18n(): Promise<Record<string, any>> {
-    return (await axios.get(this.apiURL('/i18n'), { headers: {
-      Authorization: `Bearer ${this.token}`
-   }})).data
+    return (
+      await axios.get(this.apiURL('/i18n'), {
+        headers: {
+          Authorization: `Bearer ${this.token}`
+        }
+      })
+    ).data
   }
 }
 

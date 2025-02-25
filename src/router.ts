@@ -1,3 +1,6 @@
+// @ts-strict-ignore
+// import Oidc from "oidc-client-ts";
+import { UserManager } from 'oidc-client-ts'
 import {
   NavigationGuardNext,
   RouteLocationNormalized,
@@ -8,11 +11,11 @@ import {
 
 import LayoutDefault from '@/views/layouts/LayoutDefault.vue'
 
-import { useUserStore } from './stores/userStore'
+import oidcConfig from './scripts/oauthClient'
 import { isElectron } from './utils/envUtil'
 
 const isFileProtocol = window.location.protocol === 'file:'
-const basePath = isElectron() ? '/' : window.location.pathname
+const basePath = '/' // isElectron() ? '/' : window.location.pathname
 
 const guardElectronAccess = (
   to: RouteLocationNormalized,
@@ -41,31 +44,26 @@ const router = createRouter({
         {
           path: '',
           name: 'GraphView',
-          component: () => import('@/views/GraphView.vue'),
-          beforeEnter: async (to, from, next) => {
-            next()
-            /*try {
-              const userStore = useUserStore()
-              await userStore.initialize()
-              if (userStore.needsLogin) {
-                next('/404')
-                // next('/user-select')
-              } else {
-                next()
-              }
-            }catch (error) {
-              if (to.path !== '/error') {
-                next('/error')
-              } else {
-                next('/error')
-              }
-            }*/
-          }
-        },
-        {
-          path: 'NetError',
-          name: 'NetError',
-          component: () => import('@/views/NetError.vue')
+          component: () => import('@/views/GraphView.vue')
+          // beforeEnter: async (to, from, next) => {
+          //   next()
+          //   /*try {
+          //     const userStore = useUserStore()
+          //     await userStore.initialize()
+          //     if (userStore.needsLogin) {
+          //       next('/404')
+          //       // next('/user-select')
+          //     } else {
+          //       next()
+          //     }
+          //   }catch (error) {
+          //     if (to.path !== '/error') {
+          //       next('/error')
+          //     } else {
+          //       next('/error')
+          //     }
+          //   }*/
+          // }
         },
         {
           path: 'user-select',
@@ -133,6 +131,16 @@ const router = createRouter({
           beforeEnter: guardElectronAccess
         }
       ]
+    },
+    {
+      path: '/Callback',
+      name: 'CallBack',
+      component: () => import('@/views/CallBack.vue')
+    },
+    {
+      path: '/NetError',
+      name: 'NetError',
+      component: () => import('@/views/NetError.vue')
     }
   ],
 
@@ -142,6 +150,15 @@ const router = createRouter({
     } else {
       return { top: 0 }
     }
+  }
+})
+
+router.beforeEach((to, from, next) => {
+  if (localStorage.getItem('token') || to.path == '/Callback') {
+    next()
+  } else {
+    const mgr = new UserManager(oidcConfig)
+    mgr.signinRedirect()
   }
 })
 

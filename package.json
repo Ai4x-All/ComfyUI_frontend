@@ -105,6 +105,8 @@
     "jsondiffpatch": "^0.6.0",
     "lodash": "^4.17.21",
     "loglevel": "^1.9.2",
+    "oidc-client": "^1.11.5",
+    "oidc-client-ts": "^3.1.0",
     "pinia": "^2.1.7",
     "primeicons": "^7.0.0",
     "primevue": "^4.2.5",
@@ -113,6 +115,7 @@
     "vite-plugin-mkcert": "^1.17.6",
     "vue": "^3.5.13",
     "vue-i18n": "^9.13.1",
+    "vue-oidc-client": "^1.0.0-alpha.5",
     "vue-router": "^4.4.3",
     "zod": "^3.23.8",
     "zod-validation-error": "^3.3.0"
