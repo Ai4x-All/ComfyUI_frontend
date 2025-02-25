@@ -133,7 +133,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '/Callback',
+      path: '/callback',
       name: 'CallBack',
       component: () => import('@/views/CallBack.vue')
     },
@@ -154,7 +154,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (localStorage.getItem('token') || to.path == '/Callback') {
+  if (localStorage.getItem('token') || to.path == '/callback') {
     next()
   } else {
     const mgr = new UserManager(oidcConfig)

@@ -50,3 +50,4 @@ dist.zip
 /schemas/
 
 src/extensions/core/*
+yarn.lock
