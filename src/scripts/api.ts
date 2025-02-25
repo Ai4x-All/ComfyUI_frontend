@@ -336,7 +336,7 @@ export class ComfyApi extends EventTarget {
 
     this.socket.addEventListener('close', () => {
       // this.#disconnect()
-      
+
       setTimeout(() => {
         this.socket = null
         this.#createSocket(true)

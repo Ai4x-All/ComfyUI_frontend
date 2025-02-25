@@ -1,5 +1,5 @@
 <template>
-  <div  ref="menuRef" class="custom-context-menu">
+  <div ref="menuRef" class="custom-context-menu" :style="positionStyle" v-if="isVisible">
     <ul>
       <li v-for="(item, index) in menuItems" :key="index" @click="handleMenuItemClick(item)">
         {{ item.content }}
@@ -10,71 +10,52 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed, onUnmounted, nextTick, watchEffect } from 'vue'
+import { useEventListener } from "@vueuse/core"
 import { useCanvasStore } from '@/stores/graphStore'
 import { LGraphCanvas, LiteGraph } from '@comfyorg/litegraph'
-import { useContextMenuTranslation } from '@/composables/useContextMenuTranslation'
+import { app as comfyApp } from '@/scripts/app'
 
 const isVisible = ref(false)
 const menuRef = ref<HTMLElement | null>(null)
 const menuItems = ref<any[]>([])
 const canvasStore = useCanvasStore()
 const canvas = computed(() => canvasStore.canvas)
+const positionStyle = ref(null)
 
 const handleMenuItemClick = (item: any) => {
-  if (item.action) {
-    item.action()
-  }
   isVisible.value = false
 }
 
-const showMenu = (event: MouseEvent, items: any[]) => {
-  event.preventDefault()
-  menuItems.value = items
-  isVisible.value = true
-  nextTick(() => {
-    if (menuRef.value) {
-      menuRef.value.style.left = `${event.clientX}px`
-      menuRef.value.style.top = `${event.clientY}px`
-    }
-  })
-}
-
-const hideMenu = () => {
-  isVisible.value = false
-}
-
-watchEffect(() => {
-  if (canvasStore.canvas) {
-    LiteGraph.release_link_on_empty_shows_menu = false
-    canvasStore.canvas.allow_searchbox = false
-  }
-})
-
-onMounted(() => {
-  document.addEventListener('click', hideMenu)
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', hideMenu)
-})
-
-// 监听 canvas 的右键点击事件
-watch(canvas, (newCanvas) => {
-  if (newCanvas) {
-    // newCanvas.canvas.addEventListener('contextmenu', (event: MouseEvent) => {
-    //   const items = getCanvasMenuOptions()
-    //   showMenu(event, items)
-    // })
-  }
-})
-
+// 获取画布菜单选项
 const getCanvasMenuOptions = () => {
   if (!canvas.value) return []
   const options = canvas.value.getCanvasMenuOptions()
   console.log(options)
-
   return options
 }
+
+LiteGraph.ContextMenu = function (values, options, root, current_submenu, lock) {
+  console.log(options.event)
+  const pos = [options.event?.canvasX, options.event?.canvasY]
+  const [left, top] = comfyApp.canvasPosToClientPos(pos)
+
+  positionStyle.value = {
+    top: `${top}px`,
+    left: `${left}px`
+  }
+
+  // 显示菜单
+  isVisible.value = true;
+
+  // 防止默认的右键菜单弹出
+  document.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+  });
+};
+
+onUnmounted(() => {
+  document.removeEventListener('contextmenu', () => {})
+})
 </script>
 
 <style scoped>

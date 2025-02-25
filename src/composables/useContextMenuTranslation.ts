@@ -85,7 +85,7 @@ export const useContextMenuTranslation = () => {
   }
 
   const OriginalContextMenu = LiteGraph.ContextMenu
-  function ContextMenu(
+  function ContextMenuCustom(
     values: (IContextMenuValue | string)[],
     options: IContextMenuOptions
   ) {
@@ -100,5 +100,5 @@ export const useContextMenuTranslation = () => {
     return ctx
   }
 
-  LiteGraph.ContextMenu = ContextMenu as unknown as typeof LiteGraph.ContextMenu
+  LiteGraph.ContextMenu = ContextMenuCustom as unknown as typeof LiteGraph.ContextMenu
 }

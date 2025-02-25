@@ -42,7 +42,7 @@ const showContextMenu = (event: PointerEvent) => {
 
 onMounted(() => {
   window['__COMFYUI_FRONTEND_VERSION__'] = config.app_version
-  console.log('ComfyUI Front-end version:', config.app_version)
+  // console.log('ComfyUI Front-end version:', config.app_version)
 
   if (isElectron()) {
     document.addEventListener('contextmenu', showContextMenu)
@@ -58,9 +58,10 @@ onMounted(() => {
 
   // 添加监听
   window.addEventListener('message', (event) => {
-    if (event.origin !== 'https://wb.agent4x.org/') {
-      return;
-    }
+    console.log(event)
+    // if (event.origin !== 'https://wb.agent4x.org/') {
+    //   return;
+    // }
     const { type, token, userId } = event.data;
     if (type === 'SET_TOKEN') {
       api.setToken(token);

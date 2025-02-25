@@ -48,3 +48,5 @@ dist.zip
 
 # Generated JSON Schemas
 /schemas/
+
+src/extensions/core/*

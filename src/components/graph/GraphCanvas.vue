@@ -42,7 +42,7 @@
   </SelectionOverlay>-->
   <NodeTooltip v-if="tooltipEnabled" />
   <NodeBadge />
-  <!--  <rightClickMenusPopover ref="customRightClickMenuRef" />-->
+  <!--<rightClickMenusPopover ref="customRightClickMenuRef" />-->
   <div
     v-for="node in nodes"
     :key="node.id"

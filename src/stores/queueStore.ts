@@ -41,7 +41,7 @@ export class ResultItemImpl {
   frame_rate?: number
 
   // updateCustom
-  prompt: TaskPrompt
+  prompt?: TaskPrompt
 
   constructor(obj: Record<string, any>) {
     this.filename = obj.filename ?? ''
@@ -83,7 +83,10 @@ export class ResultItemImpl {
 
   // customUpdate
   get promptId(): string {
-    return this.prompt[1]
+    if (this.prompt && this.prompt.length) {
+      return this.prompt[1]
+    }
+    return ""
   }
 
   // customUpdate
