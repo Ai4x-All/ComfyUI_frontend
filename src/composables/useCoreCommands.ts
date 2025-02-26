@@ -245,8 +245,8 @@ export function useCoreCommands(): ComfyCommand[] {
       function: () => {
         if (app.canvas.empty) {
           useToastStore().add({
-            severity: 'error',
-            summary: 'Empty canvas',
+            severity: 'warn',
+            summary: '空画布',
             life: 3000
           })
           return

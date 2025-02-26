@@ -86,12 +86,12 @@ export class ResultItemImpl {
     if (this.prompt && this.prompt.length) {
       return this.prompt[1]
     }
-    return ""
+    return ''
   }
 
   // customUpdate
   get url(): string {
-    return api.apiURL('/view?' + this.urlParams + `&prompt_id=${this.promptId}` )
+    return api.apiURL('/view?' + this.urlParams + `&prompt_id=${this.promptId}`)
   }
 
   get urlWithTimestamp(): string {
@@ -392,6 +392,8 @@ export const useQueueStore = defineStore('queue', () => {
 
       runningTasks.value = toClassAll(queue.Running)
       pendingTasks.value = toClassAll(queue.Pending)
+
+      console.log(history.History)
 
       const allIndex = new Set<number>(
         history.History.map((item: TaskItem) => item.prompt[0])

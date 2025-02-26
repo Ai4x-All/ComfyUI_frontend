@@ -489,6 +489,9 @@ dialog::backdrop {
   right: 2px;
 }
 
+.litegraph.litecontextmenu {
+  /*display: none!important;*/
+}
 .litegraph.litecontextmenu,
 .litegraph.litecontextmenu.dark {
   z-index: 9999 !important;

@@ -34,7 +34,7 @@ app.registerExtension({
         this.isVirtualNode = true
 
         // 添加一个输入槽
-        this.addInput('', 'CustomNote')
+        this.addInput('文本', 'string')
       }
 
       // 只能被 NoteNode/MarkdownNoteNode 连接
@@ -56,10 +56,10 @@ app.registerExtension({
     // Load default visibility
 
     LiteGraph.registerNodeType(
-      'ShowText',
+      '注释便签',
       Object.assign(ShowTextNode, {
         title_mode: LiteGraph.NORMAL_TITLE,
-        title: '描述',
+        title: '注释便签',
         collapsable: true
       })
     )

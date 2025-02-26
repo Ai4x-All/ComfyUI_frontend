@@ -154,6 +154,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  next()
+  return
   if (localStorage.getItem('token') || to.path == '/callback') {
     next()
   } else {

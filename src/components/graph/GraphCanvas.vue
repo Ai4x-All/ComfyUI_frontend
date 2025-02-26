@@ -12,7 +12,13 @@
       <BottomPanel />
     </template>
     <template #graph-canvas-panel>
-      <SecondRowWorkflowTabs v-if="workflowTabsPosition === 'Topbar (2nd-row)' && sidebarLocation !== 'float'" class="pointer-events-auto" />
+      <SecondRowWorkflowTabs
+        v-if="
+          workflowTabsPosition === 'Topbar (2nd-row)' &&
+          sidebarLocation !== 'float'
+        "
+        class="pointer-events-auto"
+      />
       <GraphCanvasMenu v-if="canvasMenuEnabled" class="pointer-events-auto" />
     </template>
   </LiteGraphCanvasSplitterOverlay>
@@ -42,7 +48,7 @@
   </SelectionOverlay>-->
   <NodeTooltip v-if="tooltipEnabled" />
   <NodeBadge />
-<!--  <rightClickMenusPopover ref="customRightClickMenuRef" />-->
+  <!--  <rightClickMenusPopover ref="customRightClickMenuRef" />-->
   <div
     v-for="node in nodes"
     :key="node.id"
@@ -55,25 +61,20 @@
 </template>
 
 <script setup lang="ts">
+import { LGraphNode, LiteGraph } from '@comfyorg/litegraph'
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
-import { LGraphCanvas, LiteGraph, LGraphNode } from '@comfyorg/litegraph'
 
 import LiteGraphCanvasSplitterOverlay from '@/components/LiteGraphCanvasSplitterOverlay.vue'
 import BottomPanel from '@/components/bottomPanel/BottomPanel.vue'
 import GraphCanvasMenu from '@/components/graph/GraphCanvasMenu.vue'
 import NodeBadge from '@/components/graph/NodeBadge.vue'
 import NodeTooltip from '@/components/graph/NodeTooltip.vue'
-import SelectionOverlay from '@/components/graph/SelectionOverlay.vue'
-import SelectionToolbox from '@/components/graph/SelectionToolbox.vue'
 import TitleEditor from '@/components/graph/TitleEditor.vue'
 import NodeSearchboxPopover from '@/components/searchbox/NodeSearchBoxPopover.vue'
-
-import rightClickMenusPopover from '../rightClickMenusPopover/rightClickMenusPopover.vue'
-
 import SideToolbar from '@/components/sidebar/SideToolbar.vue'
-import SideToolbarCustom from '@/components/sidebar/SideToolbarCustom.vue' // updateCustom
+import SideToolbarCustom from '@/components/sidebar/SideToolbarCustom.vue'
+// updateCustom
 import SecondRowWorkflowTabs from '@/components/topbar/SecondRowWorkflowTabs.vue'
-import { useChainCallback } from '@/composables/functional/useChainCallback'
 import { useCanvasDrop } from '@/composables/useCanvasDrop'
 import { useContextMenuTranslation } from '@/composables/useContextMenuTranslation'
 import { useCopy } from '@/composables/useCopy'
@@ -84,7 +85,7 @@ import { useWorkflowPersistence } from '@/composables/useWorkflowPersistence'
 import { CORE_SETTINGS } from '@/constants/coreSettings'
 import { i18n } from '@/i18n'
 import { api } from '@/scripts/api'
-import { app, app as comfyApp } from '@/scripts/app'
+import { app as comfyApp } from '@/scripts/app'
 import { ChangeTracker } from '@/scripts/changeTracker'
 import { IS_CONTROL_WIDGET, updateControlWidgetLabel } from '@/scripts/widgets'
 import { useColorPaletteService } from '@/services/colorPaletteService'
@@ -134,6 +135,7 @@ watchEffect(() => {
 watchEffect(() => {
   const spellcheckEnabled = settingStore.get('Comfy.TextareaWidget.Spellcheck')
   const textareas = document.querySelectorAll('textarea.comfy-multiline-input')
+  console.log(spellcheckEnabled)
 
   textareas.forEach((textarea: HTMLTextAreaElement) => {
     textarea.spellcheck = spellcheckEnabled
@@ -141,6 +143,7 @@ watchEffect(() => {
     textarea.focus()
     textarea.blur()
   })
+  console.log(textareas)
 })
 
 watch(
@@ -148,7 +151,7 @@ watch(
   () => {
     if (!canvasStore.canvas) return
 
-  for (const n of comfyApp.graph.nodes) {
+    for (const n of comfyApp.graph.nodes) {
       if (!n.widgets) continue
       for (const w of n.widgets) {
         if (w[IS_CONTROL_WIDGET]) {
@@ -259,24 +262,27 @@ const updateNodes = () => {
 }
 
 // 画布初始化后监听节点变化
-watch(() => comfyAppReady.value, (ready) => {
-  if (ready) {
-    comfyApp.graph.onNodeAdded = () => {
-      updateNodes()
-    }
-    comfyApp.graph.onNodeRemoved = () => {
-      updateNodes()
-    }
+watch(
+  () => comfyAppReady.value,
+  (ready) => {
+    if (ready) {
+      comfyApp.graph.onNodeAdded = () => {
+        updateNodes()
+      }
+      comfyApp.graph.onNodeRemoved = () => {
+        updateNodes()
+      }
 
-    // 监听画布变化更新节点位置（删除图层位置错乱）
-    comfyApp.canvas.onDrawBackground = () => {
-      updateNodes()
+      // 监听画布变化更新节点位置（删除图层位置错乱）
+      comfyApp.canvas.onDrawBackground = () => {
+        updateNodes()
+      }
     }
   }
-})
+)
 
 // 格式化坐标
-const nodeStyle =(node)=> {
+const nodeStyle = (node) => {
   const scale = canvasStore.canvas?.ds?.scale ?? 1
   const width = node.width * scale
   const height = LiteGraph.NODE_TITLE_HEIGHT * scale
@@ -304,9 +310,9 @@ const deleteNode = (nodeId: number) => {
 <style scoped>
 .node_style {
   position: absolute;
-  z-index: 1;
+  z-index: 0;
   left: 0;
   top: 0;
-  cursor: pointer
+  cursor: pointer;
 }
 </style>

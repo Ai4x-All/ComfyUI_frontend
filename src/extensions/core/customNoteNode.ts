@@ -25,7 +25,16 @@ class CustomNoteNode extends LGraphNode {
     this.serialize_widgets = true
     this.isVirtualNode = true
 
-    this.addOutput('描述', 'CustomNote')
+    this.addOutput('描述', 'string')
+  }
+
+  onExecute() {
+    const text = this.properties.text;
+    const text1 = this.getInputData(0);
+    console.log('CustomNoteNode onExecute called');
+    console.log('Text:', text);
+    console.log('Input Data:', text1);
+    this.setOutputData(0, text);
   }
 
   /*onDrawTitleBar(ctx, titleHeight, size) {
@@ -66,9 +75,9 @@ class CustomNoteNode extends LGraphNode {
 app.registerExtension({
   name: "Comfy.123",
   registerCustomNodes() {
-    LiteGraph.registerNodeType('CustomNote', Object.assign(CustomNoteNode, {
+    LiteGraph.registerNodeType('文字提示词', Object.assign(CustomNoteNode, {
         title_mode: LiteGraph.NORMAL_TITLE,
-        title: '文本域',
+        title: '文字提示词',
         collapsable: true
     }))
     CustomNoteNode.category = "utils"
