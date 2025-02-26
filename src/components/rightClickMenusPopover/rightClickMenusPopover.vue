@@ -13,14 +13,13 @@
     <ul>
       <li
         class="flex items-center"
-        :class="item.bot && 'bot'"
-        v-for="(item, index) in menuItems"
+        v-for="(item, index) in utilsNodes"
         :key="index"
-        @click="handleMenuItemClick(item)"
+        @click="handleClick(item)"
       >
         <div class="flex items-center">
           <img :src="item.icon" alt="" />
-          <span>{{ item.content }}</span>
+          <span>{{ item.name }}</span>
         </div>
       </li>
     </ul>
@@ -29,41 +28,19 @@
 
 <script setup lang="ts">
 import {
-  ConnectingLink,
   IContextMenuOptions,
   IContextMenuValue,
   LiteGraph,
   LiteGraphCanvasEvent
 } from '@comfyorg/litegraph'
 import type { Vector2 } from '@comfyorg/litegraph'
-import { OriginalEvent } from '@comfyorg/litegraph/dist/types/events'
 import { useEventListener } from '@vueuse/core'
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onUnmounted, ref } from 'vue'
 
-import icon01 from '@/assets/images/icon_right_menue_1.png'
-import icon02 from '@/assets/images/icon_right_menue_2.png'
-import icon03 from '@/assets/images/icon_right_menue_3.png'
-import icon04 from '@/assets/images/icon_right_menue_4.png'
-import icon05 from '@/assets/images/icon_right_menue_5.png'
-import icon06 from '@/assets/images/icon_right_menue_6.png'
-import icon07 from '@/assets/images/icon_right_menue_7.png'
-import icon08 from '@/assets/images/icon_right_menue_8.png'
-import icon09 from '@/assets/images/icon_right_menue_9.png'
-import icon10 from '@/assets/images/icon_right_menue_10.png'
-import icon11 from '@/assets/images/icon_right_menue_11.png'
-import icon12 from '@/assets/images/icon_right_menue_12.png'
-import icon13 from '@/assets/images/icon_right_menue_13.png'
-import icon14 from '@/assets/images/icon_right_menue_14.png'
-import icon15 from '@/assets/images/icon_right_menue_15.png'
 import { app as comfyApp } from '@/scripts/app'
 import { useLitegraphService } from '@/services/litegraphService'
 import { useCanvasStore } from '@/stores/graphStore'
-import {
-  ComfyNodeDefImpl,
-  useNodeDefStore,
-  useNodeFrequencyStore
-} from '@/stores/nodeDefStore'
-import { ConnectingLinkImpl } from '@/types/litegraphTypes'
+import { ComfyNodeDefImpl, useNodeDefStore } from '@/stores/nodeDefStore'
 
 const isVisible = ref(false)
 const menuRef = ref<HTMLElement | null>(null)
@@ -190,55 +167,16 @@ useEventListener(window, 'resize', () => {
   }
 })
 
-const getNewNodeLocation = (): Vector2 => {
-  if (!triggerEvent.value) {
-    return litegraphService.getCanvasCenter()
-  }
-
-  const originalEvent = (triggerEvent.value.detail as OriginalEvent)
-    .originalEvent
-  return [originalEvent.canvasX, originalEvent.canvasY]
-}
-
-const nodeFrequencyStore = useNodeFrequencyStore()
-const litegraphService = useLitegraphService()
-suggestions.value = nodeFrequencyStore.topNodeDefs
-console.log(suggestions.value)
-
-// 添加节点
-const addNode = (nodeDef: ComfyNodeDefImpl) => {
-  const node = litegraphService.addNodeOnGraph(nodeDef, {
-    pos: getNewNodeLocation()
-  })
-
-  const eventDetail = triggerEvent.value?.detail
-  if (eventDetail && eventDetail.subType === 'empty-release') {
-    eventDetail.linkReleaseContext.links.forEach((link: ConnectingLink) => {
-      ConnectingLinkImpl.createFromPlainObject(link).connectTo(node)
-    })
-  }
-}
-
-onMounted(() => {
-  menuItems.value = [
-    { id: 1, type: '', icon: icon01, content: '文字提示词' },
-    { id: 111, type: '', icon: icon01, content: '注释便签' },
-    { id: 2, type: '', icon: icon02, content: '笔刷绘图' },
-    { id: 3, type: '', icon: icon03, content: '上传图像' },
-    { id: 4, type: '', icon: icon04, content: '上传3D模型', bot: true },
-    { id: 5, type: '', icon: icon05, content: '文生图像' },
-    { id: 6, type: '', icon: icon06, content: '图生视频' },
-    { id: 7, type: '', icon: icon07, content: '图生3D模型', bot: true },
-    { id: 8, type: '', icon: icon08, content: '内容修改' },
-    { id: 9, type: '', icon: icon09, content: '局部重绘', bot: true },
-    { id: 10, type: '', icon: icon10, content: '文本润色' },
-    { id: 11, type: '', icon: icon11, content: '文字图像', bot: true },
-    { id: 12, type: '', icon: icon12, content: '混合创作' },
-    { id: 13, type: '', icon: icon13, content: '图层创作', bot: true },
-    { id: 14, type: '', icon: icon14, content: '注释标签' },
-    { id: 15, type: '', icon: icon15, content: '分区管理' }
-  ]
+const utilsNodes = computed(() => {
+  return [...nodeDefStore.utilsNodes]
 })
+
+/** 添加节点 */
+const handleClick = (item) => {
+  console.log(item)
+  useLitegraphService().addNodeOnGraph(item)
+  hideMenu()
+}
 
 onUnmounted(() => {
   hideMenu()
@@ -251,7 +189,7 @@ onUnmounted(() => {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   background: rgba(255, 255, 255, 0.5);
-  width: 11rem;
+  width: 12rem;
   right: 30rem;
   top: 5rem;
   border-radius: 0.6rem;

@@ -50,9 +50,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, watchEffect, nextTick } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 
 import ExtensionSlot from '@/components/common/ExtensionSlot.vue'
+import SettingDialogContent from '@/components/dialog/content/SettingDialogContent.vue'
+import SettingDialogHeader from '@/components/dialog/header/SettingDialogHeader.vue'
+import { useDialogStore } from '@/stores/dialogStore'
 import { useKeybindingStore } from '@/stores/keybindingStore'
 import { useSettingStore } from '@/stores/settingStore'
 import { useUserStore } from '@/stores/userStore'
@@ -60,12 +63,6 @@ import { useWorkspaceStore } from '@/stores/workspaceStore'
 import type { SidebarTabExtension } from '@/types/extensionTypes'
 
 import SidebarIcon from './SidebarIconCustom.vue'
-import SidebarLogoutIcon from './SidebarLogoutIcon.vue'
-import SidebarSettingsToggleIcon from './SidebarSettingsToggleIcon.vue'
-import SidebarThemeToggleIcon from './SidebarThemeToggleIcon.vue'
-import { useDialogStore } from '@/stores/dialogStore'
-import SettingDialogHeader from '@/components/dialog/header/SettingDialogHeader.vue'
-import SettingDialogContent from '@/components/dialog/content/SettingDialogContent.vue'
 
 const workspaceStore = useWorkspaceStore()
 const settingStore = useSettingStore()
@@ -95,7 +92,7 @@ const isCollapsed = ref(false)
 
 const tabs = computed(() => {
   const tabs = workspaceStore.getSidebarTabs()
-  return tabs
+  return tabs.filter((tab) => tab.id !== 'model-library')
   // return [...tabs, { id: "setting", icon: 'setting', label: "设置", title: "设置", tooltip: "设置", type: 'settings', component: () => {} }]
 })
 

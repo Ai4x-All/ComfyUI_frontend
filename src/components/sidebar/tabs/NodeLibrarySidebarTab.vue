@@ -3,112 +3,74 @@
     :title="$t('sideToolbar.nodeLibrary')"
     class="bg-[var(--p-tree-background)]"
   >
-    <template #tool-buttons>
-      <Button
-        class="new-folder-button"
-        icon="pi pi-folder-plus"
-        text
-        severity="secondary"
-        @click="nodeBookmarkTreeExplorerRef?.addNewBookmarkFolder()"
-        v-tooltip.bottom="$t('g.newFolder')"
-      />
-      <Button
-        class="sort-button"
-        :icon="alphabeticalSort ? 'pi pi-sort-alpha-down' : 'pi pi-sort-alt'"
-        text
-        severity="secondary"
-        @click="alphabeticalSort = !alphabeticalSort"
-        v-tooltip.bottom="$t('sideToolbar.nodeLibraryTab.sortOrder')"
-      />
-    </template>
-    <template #header>
-      <SearchBox
-        class="node-lib-search-box p-2 2xl:p-4"
-        v-model:modelValue="searchQuery"
-        @search="handleSearch"
-        @show-filter="($event) => searchFilter.toggle($event)"
-        @remove-filter="onRemoveFilter"
-        :placeholder="$t('g.searchNodes') + '...'"
-        filter-icon="pi pi-filter"
-        :filters
-      />
-
-      <Popover ref="searchFilter" class="ml-[-13px]">
-        <NodeSearchFilter @addFilter="onAddFilter" />
-      </Popover>
-    </template>
     <template #body>
-      <NodeBookmarkTreeExplorer
-        ref="nodeBookmarkTreeExplorerRef"
-        :filtered-node-defs="filteredNodeDefs"
-      />
-      <Divider
-        v-show="nodeBookmarkStore.bookmarks.length > 0"
-        type="dashed"
-        class="m-2"
-      />
-      <TreeExplorer
-        class="node-lib-tree-explorer"
-        :roots="renderedRoot.children"
-        v-model:expandedKeys="expandedKeys"
-      >
-        <template #node="{ node }">
-          <NodeTreeLeaf :node="node" />
-        </template>
-      </TreeExplorer>
+      <div class="custom-context-menu">
+        <!--<ul>
+          <li
+            class="flex items-center"
+            :class="item.bot && 'bot'"
+            v-for="(item, index) in renderedRoot.children[0].children"
+            key="index"
+            @click="handleClick(item)">
+            <div class="flex items-center">
+              <img :src="item.icon" alt="" />
+              <span>{{ item.content }}{{ item.display_name }} {{ item.label }}</span>
+            </div>
+          </li>
+        </ul>-->
+
+        <div class="utils-nodes">
+          <ul>
+            <li
+              class="flex items-center"
+              v-for="(nodeDef, index) in utilsNodes"
+              :key="index"
+              @click="handleClick(nodeDef)"
+            >
+              <div class="flex items-center">
+                <img :src="nodeDef.icon" alt="" />
+                <span>{{ nodeDef.name }}</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
     </template>
   </SidebarTabTemplate>
   <div id="node-library-node-preview-container" />
 </template>
 
 <script setup lang="ts">
-import Button from 'primevue/button'
-import Divider from 'primevue/divider'
-import Popover from 'primevue/popover'
-import type { TreeNode } from 'primevue/treenode'
-import { Ref, computed, h, nextTick, ref, render } from 'vue'
+import { computed, ref } from 'vue'
 
-import SearchBox from '@/components/common/SearchBox.vue'
-import { SearchFilter } from '@/components/common/SearchFilterChip.vue'
-import TreeExplorer from '@/components/common/TreeExplorer.vue'
-import NodePreview from '@/components/node/NodePreview.vue'
-import NodeSearchFilter from '@/components/searchbox/NodeSearchFilter.vue'
-import SidebarTabTemplate from '@/components/sidebar/tabs/SidebarTabTemplate.vue'
-import NodeTreeLeaf from '@/components/sidebar/tabs/nodeLibrary/NodeTreeLeaf.vue'
-import { useTreeExpansion } from '@/composables/useTreeExpansion'
 import { useLitegraphService } from '@/services/litegraphService'
-import { FilterAndValue } from '@/services/nodeSearchService'
-import { useNodeBookmarkStore } from '@/stores/nodeBookmarkStore'
 import {
   ComfyNodeDefImpl,
-  buildNodeDefTree,
-  useNodeDefStore
+  useNodeDefStore,
+  useNodeFrequencyStore
 } from '@/stores/nodeDefStore'
 import type { TreeExplorerNode } from '@/types/treeExplorerTypes'
-import { sortedTree } from '@/utils/treeUtil'
-
-import NodeBookmarkTreeExplorer from './nodeLibrary/NodeBookmarkTreeExplorer.vue'
 
 const nodeDefStore = useNodeDefStore()
-const nodeBookmarkStore = useNodeBookmarkStore()
-const expandedKeys = ref<Record<string, boolean>>({})
-const { expandNode, toggleNodeOnEvent } = useTreeExpansion(expandedKeys)
+const nodeFrequencyStore = useNodeFrequencyStore()
 
-const nodeBookmarkTreeExplorerRef = ref<InstanceType<
-  typeof NodeBookmarkTreeExplorer
-> | null>(null)
-const searchFilter = ref(null)
-const alphabeticalSort = ref(false)
+const menuItems = ref<any[]>([])
 
-const searchQuery = ref<string>('')
-
+/** 返回的所有节点 tree item.data */
 const root = computed(() => {
-  const root = filteredRoot.value || nodeDefStore.nodeTree
-  return alphabeticalSort.value ? sortedTree(root, { groupLeaf: true }) : root
+  return nodeDefStore.nodeTree
 })
 
+/** 返回接口返回节点数组 item */
+const suggestions = computed(() => {
+  return nodeFrequencyStore.topNodeDefs
+})
+
+const utilsNodes = computed(() => nodeDefStore.utilsNodes)
+
+/** renderedRoot.children[0].children item.data */
 const renderedRoot = computed<TreeExplorerNode<ComfyNodeDefImpl>>(() => {
-  const fillNodeInfo = (node: TreeNode): TreeExplorerNode<ComfyNodeDefImpl> => {
+  const fillNodeInfo = (node) => {
     const children = node.children?.map(fillNodeInfo)
 
     return {
@@ -116,84 +78,43 @@ const renderedRoot = computed<TreeExplorerNode<ComfyNodeDefImpl>>(() => {
       label: node.leaf ? node.data.display_name : node.label,
       leaf: node.leaf,
       data: node.data,
-      getIcon() {
-        if (this.leaf) {
-          return 'pi pi-circle-fill'
-        }
-      },
-      children,
-      draggable: node.leaf,
-      renderDragPreview(container) {
-        const vnode = h(NodePreview, { nodeDef: node.data })
-        render(vnode, container)
-        return () => {
-          render(null, container)
-        }
-      },
-      handleClick(e: MouseEvent) {
-        if (this.leaf) {
-          useLitegraphService().addNodeOnGraph(this.data)
-        } else {
-          toggleNodeOnEvent(e, this)
-        }
-      }
+      children
     }
   }
   return fillNodeInfo(root.value)
 })
 
-const filteredNodeDefs = ref<ComfyNodeDefImpl[]>([])
-const filteredRoot = computed<TreeNode | null>(() => {
-  if (!filteredNodeDefs.value.length) {
-    return null
-  }
-  return buildNodeDefTree(filteredNodeDefs.value)
-})
-const filters: Ref<Array<SearchFilter & { filter: FilterAndValue<string> }>> =
-  ref([])
-const handleSearch = (query: string) => {
-  // Don't apply a min length filter because it does not make sense in
-  // multi-byte languages like Chinese, Japanese, Korean, etc.
-  if (query.length === 0 && !filters.value.length) {
-    filteredNodeDefs.value = []
-    expandedKeys.value = {}
-    return
-  }
-
-  const f = filters.value.map((f) => f.filter as FilterAndValue<string>)
-  filteredNodeDefs.value = nodeDefStore.nodeSearchService.searchNode(
-    query,
-    f,
-    {
-      limit: 64
-    },
-    {
-      matchWildcards: false
-    }
-  )
-
-  nextTick(() => {
-    expandNode(filteredRoot.value)
-  })
-}
-
-const onAddFilter = (filterAndValue: FilterAndValue) => {
-  filters.value.push({
-    filter: filterAndValue,
-    badge: filterAndValue[0].invokeSequence.toUpperCase(),
-    badgeClass: filterAndValue[0].invokeSequence + '-badge',
-    text: filterAndValue[1],
-    id: +new Date()
-  })
-
-  handleSearch(searchQuery.value)
-}
-
-const onRemoveFilter = (filterAndValue) => {
-  const index = filters.value.findIndex((f) => f === filterAndValue)
-  if (index !== -1) {
-    filters.value.splice(index, 1)
-  }
-  handleSearch(searchQuery.value)
+/** 添加节点 */
+const handleClick = (item) => {
+  console.log(item)
+  useLitegraphService().addNodeOnGraph(item)
 }
 </script>
+<style scoped>
+.custom-context-menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0.5rem;
+}
+
+.custom-context-menu li {
+  cursor: pointer;
+  height: 2.5rem;
+  padding: 0 0.5rem;
+}
+.custom-context-menu li.bot {
+  border-bottom: solid 1px rgba(24, 103, 211, 1);
+  margin-bottom: 0.3rem;
+  padding-bottom: 0.3rem;
+}
+.custom-context-menu li img {
+  width: 1.8rem;
+  height: 1.8rem;
+  object-fit: contain;
+}
+.custom-context-menu li span {
+  font-size: 1rem;
+  color: rgb(51, 51, 51);
+  padding-left: 1rem;
+}
+</style>
