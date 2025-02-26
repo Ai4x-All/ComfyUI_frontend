@@ -12,6 +12,7 @@ docker rm comfyui-frontend
 docker run -d \
 --restart unless-stopped \
 --name comfyui-frontend -p 9180:9180 \
-devserver:5000/comfyui-frontend:1.0.1
+-v /etc/apps/comfyui_frontend:/etc/nginx/conf.d \
+devserver:5000/comfyui-frontend:latest
 
 ```
