@@ -5,7 +5,7 @@ FROM nginx:latest
 RUN rm /etc/nginx/conf.d/default.conf
 
 # 将自定义的nginx配置文件复制到容器中
-COPY nginx.conf /etc/nginx/conf.d/
+# COPY nginx.conf /etc/nginx/conf.d/
 
 # 将已经build好的前端项目复制到nginx的html目录下
 COPY ./dist /usr/share/nginx/html
