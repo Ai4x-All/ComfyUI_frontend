@@ -34,7 +34,7 @@ class CustomNoteNode extends LGraphNode {
     console.log('CustomNoteNode onExecute called');
     console.log('Text:', text);
     console.log('Input Data:', text1);
-    this.setOutputData(0, text);
+    this.setOutputData(0, text); // 输出为输入框值
   }
 
   /*onDrawTitleBar(ctx, titleHeight, size) {
@@ -73,7 +73,7 @@ class CustomNoteNode extends LGraphNode {
 }
 
 app.registerExtension({
-  name: "Comfy.123",
+  name: "Comfy.CustomNoteNode",
   registerCustomNodes() {
     LiteGraph.registerNodeType('文字提示词', Object.assign(CustomNoteNode, {
         title_mode: LiteGraph.NORMAL_TITLE,

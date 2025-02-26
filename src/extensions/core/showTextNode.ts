@@ -33,27 +33,17 @@ app.registerExtension({
         this.serialize_widgets = true
         this.isVirtualNode = true
 
-        // 添加一个输入槽
         this.addInput('文本', 'string')
       }
 
-      // 只能被 NoteNode/MarkdownNoteNode 连接
-      connect(slot: number | string, target_node: LGraphNode, target_slot, afterRerouteId?) {
-        return null
-      }
-
-      // 只能被 NoteNode/MarkdownNoteNode 连接
-      connectByType(slot: number | string, target_node: LGraphNode, target_slotType, optsIn) {
-        return null
-      }
-
-      // 只能被 NoteNode/MarkdownNoteNode 连接
-      connectByTypeOutput(slot: number | string, source_node: LGraphNode, source_slotType, optsIn?) {
-        return null
+      onExecute() {
+        const inputData = this.getInputData(0);
+        if (inputData) {
+          this.properties.description = inputData as string;
+          this.widgets[0].value = this.properties.description;
+        }
       }
     }
-
-    // Load default visibility
 
     LiteGraph.registerNodeType(
       '注释便签',
