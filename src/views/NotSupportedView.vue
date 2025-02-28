@@ -2,11 +2,11 @@
   <BaseViewTemplate>
     <div class="sad-container">
       <!-- Right side image -->
-      <img
+      <!--<img
         class="sad-girl"
         src="/assets/images/sad_girl.png"
         alt="Sad girl illustration"
-      />
+      />-->
 
       <div class="no-drag sad-text flex items-center">
         <div class="flex flex-col gap-8 p-8 min-w-110">

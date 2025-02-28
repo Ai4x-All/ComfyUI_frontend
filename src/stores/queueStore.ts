@@ -393,8 +393,6 @@ export const useQueueStore = defineStore('queue', () => {
       runningTasks.value = toClassAll(queue.Running)
       pendingTasks.value = toClassAll(queue.Pending)
 
-      console.log(history.History)
-
       const allIndex = new Set<number>(
         history.History.map((item: TaskItem) => item.prompt[0])
       )

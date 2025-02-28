@@ -48,7 +48,7 @@
   </SelectionOverlay>-->
   <NodeTooltip v-if="tooltipEnabled" />
   <NodeBadge />
-  <!--  <rightClickMenusPopover ref="customRightClickMenuRef" />-->
+  <rightClickMenusPopover ref="customRightClickMenuRef" />
   <div
     v-for="node in nodes"
     :key="node.id"
@@ -135,7 +135,6 @@ watchEffect(() => {
 watchEffect(() => {
   const spellcheckEnabled = settingStore.get('Comfy.TextareaWidget.Spellcheck')
   const textareas = document.querySelectorAll('textarea.comfy-multiline-input')
-  console.log(spellcheckEnabled)
 
   textareas.forEach((textarea: HTMLTextAreaElement) => {
     textarea.spellcheck = spellcheckEnabled
@@ -143,7 +142,6 @@ watchEffect(() => {
     textarea.focus()
     textarea.blur()
   })
-  console.log(textareas)
 })
 
 watch(

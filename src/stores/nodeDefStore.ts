@@ -4,6 +4,20 @@ import { defineStore } from 'pinia'
 import type { TreeNode } from 'primevue/treenode'
 import { computed, ref } from 'vue'
 
+import icon02 from '@/assets/images/icon_right_menue_2.png'
+import icon03 from '@/assets/images/icon_right_menue_3.png'
+import icon04 from '@/assets/images/icon_right_menue_4.png'
+import icon05 from '@/assets/images/icon_right_menue_5.png'
+import icon06 from '@/assets/images/icon_right_menue_6.png'
+import icon07 from '@/assets/images/icon_right_menue_7.png'
+import icon08 from '@/assets/images/icon_right_menue_8.png'
+import icon09 from '@/assets/images/icon_right_menue_9.png'
+import icon10 from '@/assets/images/icon_right_menue_10.png'
+import icon11 from '@/assets/images/icon_right_menue_11.png'
+import icon12 from '@/assets/images/icon_right_menue_12.png'
+import icon13 from '@/assets/images/icon_right_menue_13.png'
+import icon14 from '@/assets/images/icon_right_menue_14.png'
+import icon15 from '@/assets/images/icon_right_menue_15.png'
 import {
   NodeSearchService,
   type SearchAuxScore
@@ -20,6 +34,23 @@ import {
   getNodeSource
 } from '@/types/nodeSource'
 import { buildTree } from '@/utils/treeUtil'
+
+const defaultTabs = [
+  { id: 2, type: '', icon: icon02, name: '笔刷绘图' },
+  { id: 3, type: '', icon: icon03, name: '上传图像' },
+  { id: 4, type: '', icon: icon04, name: '上传3D模型', bot: true },
+  { id: 5, type: '', icon: icon05, name: '文生图像' },
+  { id: 6, type: '', icon: icon06, name: '图生视频' },
+  { id: 7, type: '', icon: icon07, name: '图生3D模型', bot: true },
+  { id: 8, type: '', icon: icon08, name: '内容修改' },
+  { id: 9, type: '', icon: icon09, name: '局部重绘', bot: true },
+  { id: 10, type: '', icon: icon10, name: '文本润色' },
+  { id: 11, type: '', icon: icon11, name: '文字图像', bot: true },
+  { id: 12, type: '', icon: icon12, name: '混合创作' },
+  { id: 13, type: '', icon: icon13, name: '图层创作', bot: true },
+  { id: 14, type: '', icon: icon14, name: '注释标签' },
+  { id: 15, type: '', icon: icon15, name: '分区管理' }
+]
 
 export interface BaseInputSpec<T = any> {
   name: string
@@ -189,6 +220,7 @@ export class ComfyNodeDefImpl implements ComfyNodeDef {
   readonly inputs: ComfyInputsSpec
   readonly outputs: ComfyOutputsSpec
   readonly nodeSource: NodeSource
+  readonly icon: string // updateCustom
 
   constructor(obj: ComfyNodeDef) {
     this.name = obj.name
@@ -209,6 +241,9 @@ export class ComfyNodeDefImpl implements ComfyNodeDef {
     this.inputs = new ComfyInputsSpec(obj.input ?? {})
     this.outputs = ComfyNodeDefImpl.transformOutputSpec(obj)
     this.nodeSource = getNodeSource(obj.python_module)
+
+    // console.log(obj)
+    this.icon = obj.icon ?? icon14
   }
 
   private static transformOutputSpec(obj: any): ComfyOutputsSpec {
@@ -264,7 +299,8 @@ export const SYSTEM_NODE_DEFS: Record<string, ComfyNodeDef> = {
     output_is_list: [false],
     output_node: false,
     python_module: 'nodes',
-    description: 'Primitive values like numbers, strings, and booleans.'
+    description: 'Primitive values like numbers, strings, and booleans.',
+    icon: ''
   },
   Reroute: {
     name: 'Reroute',
@@ -276,7 +312,8 @@ export const SYSTEM_NODE_DEFS: Record<string, ComfyNodeDef> = {
     output_is_list: [false],
     output_node: false,
     python_module: 'nodes',
-    description: 'Reroute the connection to another node.'
+    description: 'Reroute the connection to another node.',
+    icon: ''
   },
   Note: {
     name: 'Note',
@@ -288,7 +325,8 @@ export const SYSTEM_NODE_DEFS: Record<string, ComfyNodeDef> = {
     output_is_list: [],
     output_node: false,
     python_module: 'nodes',
-    description: 'Node that add notes to your project'
+    description: 'Node that add notes to your project',
+    icon: ''
   },
   MarkdownNote: {
     name: 'MarkdownNote',
@@ -301,7 +339,8 @@ export const SYSTEM_NODE_DEFS: Record<string, ComfyNodeDef> = {
     output_node: false,
     python_module: 'nodes',
     description:
-      'Node that add notes to your project. Reformats text as markdown.'
+      'Node that add notes to your project. Reformats text as markdown.',
+    icon: ''
   }
 }
 
@@ -322,7 +361,8 @@ export function createDummyFolderNodeDef(folderPath: string): ComfyNodeDefImpl {
     output: [],
     output_name: [],
     output_is_list: [],
-    output_node: false
+    output_node: false,
+    icon: ''
   } as ComfyNodeDef)
 }
 
@@ -356,6 +396,25 @@ export const useNodeDefStore = defineStore('nodeDef', () => {
     () => new NodeSearchService(visibleNodeDefs.value)
   )
   const nodeTree = computed(() => buildNodeDefTree(visibleNodeDefs.value))
+
+  const utilsNodes = computed(() => {
+    const CustomUtils = visibleNodeDefs.value.filter(
+      (nodeDef) => nodeDef.category === 'CustomUtils'
+    )
+    const CreativeCanvas = visibleNodeDefs.value.filter(
+      (nodeDef) => nodeDef.category === 'CreativeCanvas'
+    )
+    const ImageGenerator = visibleNodeDefs.value.filter(
+      (nodeDef) => nodeDef.category === 'CreativeCanvas/ImageGenerator'
+    )
+    // const Utils = visibleNodeDefs.value.filter(nodeDef => nodeDef.category === 'utils')
+    return [
+      ...CustomUtils,
+      ...CreativeCanvas,
+      ...ImageGenerator,
+      ...defaultTabs
+    ]
+  })
 
   function updateNodeDefs(nodeDefs: ComfyNodeDef[]) {
     const newNodeDefsByName: Record<string, ComfyNodeDefImpl> = {}
@@ -395,6 +454,7 @@ export const useNodeDefStore = defineStore('nodeDef', () => {
     visibleNodeDefs,
     nodeSearchService,
     nodeTree,
+    utilsNodes,
 
     updateNodeDefs,
     addNodeDef,

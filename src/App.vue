@@ -59,7 +59,6 @@ onMounted(() => {
   // 添加监听
   window.addEventListener('message', (event) => {
     console.log(event)
-    console.log(location.pathname.split('/').slice(0, -1).join('/'))
     // if (event.origin !== 'https://wb.agent4x.org/') {
     //   return;
     // }

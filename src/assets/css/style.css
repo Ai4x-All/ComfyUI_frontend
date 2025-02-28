@@ -471,7 +471,6 @@ dialog::backdrop {
 }
 
 /* Context menu */
-
 .litegraph .dialog {
   z-index: 1;
   font-family: Arial, sans-serif;
@@ -490,7 +489,7 @@ dialog::backdrop {
 }
 
 .litegraph.litecontextmenu {
-  /*display: none!important;*/
+  display: none!important;
 }
 .litegraph.litecontextmenu,
 .litegraph.litecontextmenu.dark {
