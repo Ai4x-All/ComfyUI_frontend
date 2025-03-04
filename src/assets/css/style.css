@@ -488,7 +488,7 @@ dialog::backdrop {
   right: 2px;
 }
 
-.litegraph.litecontextmenu {
+.litegraph.litecontextmenu, .litegraph.litesearchbox  {
   display: none!important;
 }
 .litegraph.litecontextmenu,

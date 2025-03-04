@@ -283,7 +283,7 @@ app.registerExtension({
     LiteGraph.registerNodeType(
       'Reroute',
       Object.assign(RerouteNode, {
-        title_mode: LiteGraph.NO_TITLE,
+        // title_mode: LiteGraph.NO_TITLE,
         title: 'Reroute',
         collapsable: false
       })

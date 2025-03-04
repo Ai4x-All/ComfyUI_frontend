@@ -18,6 +18,9 @@ export const useUserStore = defineStore('user', () => {
    * The current user id. null if not logged in or in single user mode.
    */
   const currentUserId = ref<string | null>(null)
+
+  const isCollapsed = ref(localStorage.getItem('Comfy.isCollapsed') === 'true')
+
   const isMultiUserServer = computed(
     () => userConfig.value && 'users' in userConfig.value
   )
@@ -45,10 +48,12 @@ export const useUserStore = defineStore('user', () => {
 
     userConfig.value = data
     currentUserId.value = localStorage['Comfy.userId']
-    const users = Object.entries(data?.users ?? {}).map(([userId, username]) => ({
-      userId,
-      username
-    }))
+    const users = Object.entries(data?.users ?? {}).map(
+      ([userId, username]) => ({
+        userId,
+        username
+      })
+    )
 
     if (users && users.length) {
       await login({ userId: users[0].userId, username: users[0].username })
@@ -107,6 +112,12 @@ export const useUserStore = defineStore('user', () => {
     delete localStorage['Comfy.userName']
   }
 
+  // 更新 isCollapsed
+  function setIsCollapsed(value: boolean) {
+    isCollapsed.value = value
+    localStorage.setItem('Comfy.isCollapsed', value.toString())
+  }
+
   return {
     users,
     currentUser,
@@ -116,6 +127,8 @@ export const useUserStore = defineStore('user', () => {
     initialize,
     createUser,
     login,
-    logout
+    logout,
+    isCollapsed,
+    setIsCollapsed
   }
 })

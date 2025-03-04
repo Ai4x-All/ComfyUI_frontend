@@ -18,8 +18,8 @@
         @click="handleClick(item)"
       >
         <div class="flex items-center">
-          <img :src="item.icon" alt="" />
-          <span>{{ item.name }}</span>
+          <img :src="formatIcon(item)" alt="" />
+          <span>{{ getDisplayName(item) }}</span>
         </div>
       </li>
     </ul>
@@ -30,8 +30,7 @@
 import {
   IContextMenuOptions,
   IContextMenuValue,
-  LiteGraph,
-  LiteGraphCanvasEvent
+  LiteGraph
 } from '@comfyorg/litegraph'
 import type { Vector2 } from '@comfyorg/litegraph'
 import { useEventListener } from '@vueuse/core'
@@ -41,6 +40,7 @@ import { app as comfyApp } from '@/scripts/app'
 import { useLitegraphService } from '@/services/litegraphService'
 import { useCanvasStore } from '@/stores/graphStore'
 import { ComfyNodeDefImpl, useNodeDefStore } from '@/stores/nodeDefStore'
+import formatIcon from '@/utils/format'
 
 const isVisible = ref(false)
 const menuRef = ref<HTMLElement | null>(null)
@@ -49,7 +49,15 @@ const canvasStore = useCanvasStore()
 const canvas = computed(() => canvasStore.canvas)
 const nodeDefStore = useNodeDefStore()
 const suggestions = ref<ComfyNodeDefImpl[]>([])
-const triggerEvent = ref<LiteGraphCanvasEvent | null>(null)
+
+interface NodeItem {
+  id: number
+  type: string
+  icon: string
+  name: string
+  display_name?: string
+  bot?: boolean
+}
 
 const positionStyle = ref({
   top: '0px',
@@ -96,6 +104,7 @@ const adjustMenuPosition = (left, top) => {
     top: `${adjustedTop}px`
   }
 }
+
 const OriginalContextMenu = LiteGraph.ContextMenu
 
 interface CustomMouseEvent extends MouseEvent {
@@ -167,13 +176,16 @@ useEventListener(window, 'resize', () => {
   }
 })
 
-const utilsNodes = computed(() => {
-  return [...nodeDefStore.utilsNodes]
+const utilsNodes = computed<NodeItem[]>(() => {
+  return nodeDefStore.utilsNodes as NodeItem[]
 })
+
+const getDisplayName = (item: NodeItem): string => {
+  return item.display_name || item.name
+}
 
 /** 添加节点 */
 const handleClick = (item) => {
-  console.log(item)
   useLitegraphService().addNodeOnGraph(item)
   hideMenu()
 }

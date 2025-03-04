@@ -8,12 +8,11 @@ import {
   LGraphGroup,
   LGraphNode,
   LLink,
-  LiteGraph,
-} from '@comfyorg/litegraph';
+  LiteGraph
+} from '@comfyorg/litegraph'
+
 import IconDel from '@/assets/images/icon_del.png'
-import { useAbsolutePosition } from '@/composables/element/useAbsolutePosition'
 import { useCanvasStore } from '@/stores/graphStore'
-import { app } from '@/scripts/app'
 
 /**
  * Assign all properties of LiteGraph to window to make it backward compatible.
@@ -21,15 +20,15 @@ import { app } from '@/scripts/app'
 
 export const useGlobalLitegraph = () => {
   // Export LiteGraph components to the global window object
-  window['LiteGraph'] = LiteGraph;
-  window['LGraph'] = LGraph;
-  window['LLink'] = LLink;
-  window['LGraphNode'] = LGraphNode;
-  window['LGraphGroup'] = LGraphGroup;
-  window['DragAndScale'] = DragAndScale;
-  window['LGraphCanvas'] = LGraphCanvas;
-  window['ContextMenu'] = ContextMenu;
-  window['LGraphBadge'] = LGraphBadge;
+  window['LiteGraph'] = LiteGraph
+  window['LGraph'] = LGraph
+  window['LLink'] = LLink
+  window['LGraphNode'] = LGraphNode
+  window['LGraphGroup'] = LGraphGroup
+  window['DragAndScale'] = DragAndScale
+  window['LGraphCanvas'] = LGraphCanvas
+  window['ContextMenu'] = ContextMenu
+  window['LGraphBadge'] = LGraphBadge
 
   const icon = new Image()
   icon.src = IconDel
@@ -41,6 +40,20 @@ export const useGlobalLitegraph = () => {
   console.log(newWidth, newHeight)*/
   const titleHeight = LiteGraph.NODE_TITLE_HEIGHT
   const titleWidth = LiteGraph.NODE_WIDTH
+
+  // window['handleGlobalOutputClick'] = (event) => {
+  //   const { node, outputInfo, pos, size, index } = event.detail;
+  //   const detail = {
+  //     node,
+  //     outputInfo,
+  //     pos,
+  //     size,
+  //     index
+  //   };
+
+  //   const customEvent = new CustomEvent('showOutputMenu', { detail });
+  //   document.dispatchEvent(customEvent);
+  // };
 
   /** 创建图标 */
   /*const originalOnDrawForeground = LGraphNode.prototype.onDrawForeground;
@@ -99,4 +112,14 @@ export const useGlobalLitegraph = () => {
 
     return originalOnMouseDown ? originalOnMouseDown.call(this, e, pos, canvas) : false;
   };*/
-};
+
+  /*const originalProcessContextMenu = LGraphCanvas.prototype.processContextMenu;
+  LGraphCanvas.prototype.processContextMenu = function(node, event) {
+    if (node) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false
+    }
+    return originalProcessContextMenu.call(this, node, event);
+  };*/
+}

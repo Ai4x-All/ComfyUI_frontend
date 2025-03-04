@@ -4,7 +4,8 @@ import { LGraphNode } from '@comfyorg/litegraph'
 
 import { app } from '@/scripts/app'
 import { ComfyWidgets } from '@/scripts/widgets'
-import IconDel from "@/assets/images/logo.png"
+import { useAbsolutePosition } from '@/composables/element/useAbsolutePosition'
+import IconDel from "@/assets/images/icon_del.png"
 
 // Node that add notes to your project
 
@@ -12,9 +13,12 @@ app.registerExtension({
   name: 'Comfy.NoteNode',
   registerCustomNodes() {
     class NoteNode extends LGraphNode {
-      static category: string
-      static collapsable: boolean
-      static title_mode: number
+      static category: string = 'utils';
+      static collapsable: boolean = true;
+      static title_mode: number = LiteGraph.NORMAL_TITLE;
+      static icon: string
+      static titleHeight: number | string = LiteGraph.NODE_TITLE_HEIGHT;
+      static titleWidth: any = LiteGraph.NODE_WIDTH;
 
       // color = LGraphCanvas.node_colors.yellow.color
       // bgcolor = LGraphCanvas.node_colors.yellow.bgcolor
@@ -37,39 +41,39 @@ app.registerExtension({
         this.serialize_widgets = true
         this.isVirtualNode = true
 
-        // this.icon = new Image()
-        // this.icon.src = IconDel
+        // this.icon = new Image();
+        // this.icon.src = IconDel;
+        // this.titleHeight = LiteGraph.NODE_TITLE_HEIGHT;
+        // this.titleWidth = LiteGraph.NODE_WIDTH;
       }
 
-      /*drawTitleBarBackground(ctx: CanvasRenderingContext2D, options: {
-        scale: number;
-        title_height?: number;
-        low_quality?: boolean;
-      }) {
-        console.log(this.pos)
-        const { scale, title_height = 20 } = options;
-        const x = this.pos[0];
-        const y = this.pos[1];
-        const width = this.size[0];
-        const height = title_height * scale;
+      /*onDrawForeground(ctx: CanvasRenderingContext2D, options: { scale: number; title_height?: number; low_quality?: boolean; }) {
+       const nodeWidth = this.size[0];
+        const nodeX = this.pos[0];
+        const nodeY = this.pos[1];
 
-        // 绘制标题栏背景
-        // ctx.fillStyle = this.bgcolor;
-        // ctx.fillRect(x, y, width, height);
+        const iconWidth = 24;
+        const iconHeight = 24;
 
-        // 绘制删除图标
-        const iconSize = 20 * scale;
-        const iconX = x + width - iconSize - 5 * scale;
-        const iconY = y + (height - iconSize) / 2;
+        const { style } = useAbsolutePosition();
+        const { left, top } = style.value;
+        const iconX = parseFloat(left.replace('px', ''));
+        const iconY = parseFloat(top.replace('px', ''));
+
+        const iconDx = nodeWidth - iconWidth - 8;
+        const iconDy = -this.titleHeight+(this.titleHeight - iconHeight)/2
+
+       const [clientX, clientY] = app.clientPosToCanvasPos(this.pos);
+
+       this.delIcon = { x: nodeX, y: nodeY, x2: nodeX + iconDx, y2: nodeY + iconDy, width: iconWidth, height: iconHeight, clientX, clientY };
+       this.deleteIconRect = { x: iconDx, y: iconDy, width: iconWidth, height: iconHeight };
 
         if (this.icon.complete) {
-          ctx.drawImage(this.icon, iconX, iconY, iconSize, iconSize);
-          this.deleteIconRect = { x: iconX, y: iconY, width: iconSize, height: iconSize }
+          ctx.drawImage(this.icon, iconDx, iconDy, iconWidth, iconHeight);
         } else {
           this.icon.onload = () => {
-            ctx.drawImage(this.icon, iconX, iconY, iconSize, iconSize);
-            this.deleteIconRect = { x: iconX, y: iconY, width: iconSize, height: iconSize }
-          }
+            ctx.drawImage(this.icon, iconDx, iconDy, iconWidth, iconHeight);
+          };
         }
       }*/
 

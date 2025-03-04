@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted } from 'vue'
 
 import ExtensionSlot from '@/components/common/ExtensionSlot.vue'
 import SettingDialogContent from '@/components/dialog/content/SettingDialogContent.vue'
@@ -88,7 +88,12 @@ const isSmall = computed(
   () => settingStore.get('Comfy.Sidebar.Size') === 'small'
 )
 
-const isCollapsed = ref(false)
+const isCollapsed = computed({
+  get: () => userStore.isCollapsed,
+  set: (value) => userStore.setIsCollapsed(value)
+})
+
+// const isCollapsed = ref(false)
 
 const tabs = computed(() => {
   const tabs = workspaceStore.getSidebarTabs()
@@ -118,11 +123,12 @@ const getTabTooltipSuffix = (tab: SidebarTabExtension) => {
 }
 
 const handleHideScale = () => {
-  isCollapsed.value = !isCollapsed.value
+  const newValue = !isCollapsed.value
+  userStore.setIsCollapsed(newValue)
   const bodyFloat = document.querySelector('.comfyui-body-float_body')
   if (bodyFloat) {
-    bodyFloat.classList.toggle('collapsed', isCollapsed.value)
-    bodyFloat.classList.toggle('expanded', !isCollapsed.value)
+    bodyFloat.classList.toggle('collapsed', newValue)
+    bodyFloat.classList.toggle('expanded', !newValue)
   }
 }
 
@@ -132,6 +138,12 @@ onMounted(() => {
     nextTick(() => {
       workspaceStore.sidebarTab.toggleSidebarTab(tabs.value[0].id)
     })
+  }
+
+  const bodyFloat = document.querySelector('.comfyui-body-float_body')
+  if (bodyFloat) {
+    bodyFloat.classList.toggle('collapsed', isCollapsed.value)
+    bodyFloat.classList.toggle('expanded', !isCollapsed.value)
   }
 })
 

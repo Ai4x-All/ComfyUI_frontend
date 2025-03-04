@@ -4,15 +4,14 @@ import { defineStore } from 'pinia'
 import type { TreeNode } from 'primevue/treenode'
 import { computed, ref } from 'vue'
 
+import icon01 from '@/assets/images/icon_right_menue_1.png'
 import icon02 from '@/assets/images/icon_right_menue_2.png'
 import icon03 from '@/assets/images/icon_right_menue_3.png'
 import icon04 from '@/assets/images/icon_right_menue_4.png'
-import icon05 from '@/assets/images/icon_right_menue_5.png'
 import icon06 from '@/assets/images/icon_right_menue_6.png'
 import icon07 from '@/assets/images/icon_right_menue_7.png'
 import icon08 from '@/assets/images/icon_right_menue_8.png'
 import icon09 from '@/assets/images/icon_right_menue_9.png'
-import icon10 from '@/assets/images/icon_right_menue_10.png'
 import icon11 from '@/assets/images/icon_right_menue_11.png'
 import icon12 from '@/assets/images/icon_right_menue_12.png'
 import icon13 from '@/assets/images/icon_right_menue_13.png'
@@ -39,16 +38,16 @@ const defaultTabs = [
   { id: 2, type: '', icon: icon02, name: '笔刷绘图' },
   { id: 3, type: '', icon: icon03, name: '上传图像' },
   { id: 4, type: '', icon: icon04, name: '上传3D模型', bot: true },
-  { id: 5, type: '', icon: icon05, name: '文生图像' },
+  // { id: 5, type: '', icon: icon05, name: '文生图像' },
   { id: 6, type: '', icon: icon06, name: '图生视频' },
   { id: 7, type: '', icon: icon07, name: '图生3D模型', bot: true },
   { id: 8, type: '', icon: icon08, name: '内容修改' },
   { id: 9, type: '', icon: icon09, name: '局部重绘', bot: true },
-  { id: 10, type: '', icon: icon10, name: '文本润色' },
+  // { id: 10, type: '', icon: icon10, name: '文本润色' },
   { id: 11, type: '', icon: icon11, name: '文字图像', bot: true },
   { id: 12, type: '', icon: icon12, name: '混合创作' },
   { id: 13, type: '', icon: icon13, name: '图层创作', bot: true },
-  { id: 14, type: '', icon: icon14, name: '注释标签' },
+  // { id: 14, type: '', icon: icon14, name: '注释标签' },
   { id: 15, type: '', icon: icon15, name: '分区管理' }
 ]
 
@@ -341,6 +340,32 @@ export const SYSTEM_NODE_DEFS: Record<string, ComfyNodeDef> = {
     description:
       'Node that add notes to your project. Reformats text as markdown.',
     icon: ''
+  },
+  ShowNotes: {
+    name: 'ShowNotes',
+    display_name: '注释便签',
+    category: 'CustomUtils',
+    input: { required: { '': ['STRING', { forceInput: true }] }, optional: {} },
+    output: ['*'],
+    output_name: [''],
+    output_is_list: [false],
+    output_node: false,
+    python_module: 'nodes',
+    description: '注释便签',
+    icon: icon01
+  },
+  CustomNote: {
+    name: 'CustomNote',
+    display_name: '文字提示词',
+    category: 'CustomUtils',
+    input: { required: {}, optional: {} },
+    output: ['*'],
+    output_name: [''],
+    output_is_list: [false],
+    output_node: false,
+    python_module: 'nodes',
+    description: '文字提示词',
+    icon: icon01
   }
 }
 
@@ -401,6 +426,7 @@ export const useNodeDefStore = defineStore('nodeDef', () => {
     const CustomUtils = visibleNodeDefs.value.filter(
       (nodeDef) => nodeDef.category === 'CustomUtils'
     )
+
     const CreativeCanvas = visibleNodeDefs.value.filter(
       (nodeDef) => nodeDef.category === 'CreativeCanvas'
     )

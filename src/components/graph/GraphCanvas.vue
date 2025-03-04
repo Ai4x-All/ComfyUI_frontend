@@ -41,8 +41,9 @@
     id="graph-canvas"
     tabindex="1"
     class="w-full h-full touch-none"
+    @contextmenu.prevent
   />
-  <NodeSearchboxPopover />
+  <!--<NodeSearchboxPopover />-->
   <!--<SelectionOverlay v-if="selectionToolboxEnabled">
     <SelectionToolbox />
   </SelectionOverlay>-->
@@ -58,11 +59,42 @@
   >
     <DeleteIcon :nodeId="node.id" @delete-node="deleteNode" />
   </div>
+
+  <!--<div
+    v-show="showOutputMenu"
+    class="fixed inset-0 z-40"
+    @click="handleClickOutside"
+  />-->
+  <div
+    ref="outMenuRef"
+    @click.stop
+    v-if="showOutputMenu"
+    class="output-menu-container"
+    :style="outputMenuPosition"
+  >
+    <div
+      v-for="(input, index) in nodesInputs"
+      :key="index"
+      class="menu-item hover:bg-gray-100 cursor-pointer p-2"
+      @click="handleNodesInput(input)"
+    >
+      <div class="nis_item">{{ input.display_name }}</div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { LGraphNode, LiteGraph } from '@comfyorg/litegraph'
-import { computed, onMounted, ref, watch, watchEffect } from 'vue'
+import { useEventListener } from '@vueuse/core'
+import {
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+  watchEffect
+} from 'vue'
 
 import LiteGraphCanvasSplitterOverlay from '@/components/LiteGraphCanvasSplitterOverlay.vue'
 import BottomPanel from '@/components/bottomPanel/BottomPanel.vue'
@@ -70,7 +102,6 @@ import GraphCanvasMenu from '@/components/graph/GraphCanvasMenu.vue'
 import NodeBadge from '@/components/graph/NodeBadge.vue'
 import NodeTooltip from '@/components/graph/NodeTooltip.vue'
 import TitleEditor from '@/components/graph/TitleEditor.vue'
-import NodeSearchboxPopover from '@/components/searchbox/NodeSearchBoxPopover.vue'
 import SideToolbar from '@/components/sidebar/SideToolbar.vue'
 import SideToolbarCustom from '@/components/sidebar/SideToolbarCustom.vue'
 // updateCustom
@@ -89,6 +120,7 @@ import { app as comfyApp } from '@/scripts/app'
 import { ChangeTracker } from '@/scripts/changeTracker'
 import { IS_CONTROL_WIDGET, updateControlWidgetLabel } from '@/scripts/widgets'
 import { useColorPaletteService } from '@/services/colorPaletteService'
+import { useLitegraphService } from '@/services/litegraphService'
 import { useWorkflowService } from '@/services/workflowService'
 import { useCommandStore } from '@/stores/commandStore'
 import { useCanvasStore } from '@/stores/graphStore'
@@ -211,8 +243,8 @@ onMounted(async () => {
   // ChangeTracker needs to be initialized before setup, as it will overwrite
   // some listeners of litegraph canvas.
   ChangeTracker.init(comfyApp)
-  await loadCustomNodesI18n()
-  await settingStore.loadSettingValues()
+  await loadCustomNodesI18n() // 注
+  await settingStore.loadSettingValues() // 注
   CORE_SETTINGS.forEach((setting) => {
     settingStore.addSetting(setting)
   })
@@ -251,6 +283,7 @@ onMounted(async () => {
 })
 
 const nodes = ref<LGraphNode[]>([])
+const nodesInputs = ref([])
 
 // 监听画布中的节点变化
 const updateNodes = () => {
@@ -270,7 +303,6 @@ watch(
       comfyApp.graph.onNodeRemoved = () => {
         updateNodes()
       }
-
       // 监听画布变化更新节点位置（删除图层位置错乱）
       comfyApp.canvas.onDrawBackground = () => {
         updateNodes()
@@ -298,11 +330,126 @@ const nodeStyle = (node) => {
 // 删除节点
 const deleteNode = (nodeId: number) => {
   const node = comfyApp.graph.getNodeById(nodeId)
+
   if (node) {
     comfyApp.graph.remove(node)
     updateNodes()
   }
 }
+
+/** 过滤输出类型匹配的节点 */
+const getRelatedNodesByOutputType = (outputType, nodes) => {
+  return nodes.filter((node) => {
+    const requiredInputs = node.inputs?.required
+    if (requiredInputs) {
+      return Object.values(requiredInputs).some((input: { type: string }) => {
+        return input.type === 'STRING'
+          ? LiteGraph.isValidConnection(outputType, input.type)
+          : LiteGraph.isValidConnection(outputType, input.type)
+        /*if (input.type === "STRING") {
+          if (input.forceInput) {
+            return LiteGraph.isValidConnection(outputType, input.type)
+          }
+        } else {
+          return LiteGraph.isValidConnection(outputType, input.type)
+        }*/
+      })
+    }
+    return false
+  })
+}
+
+const showOutputMenu = ref(false)
+const outputMenuPosition = ref({
+  left: '0px',
+  top: '0px'
+})
+const clickedNode = ref(null)
+const outMenuRef = ref<HTMLElement | null>(null)
+
+/** 计算窗口位置 */
+const calculateMenuPosition = (node) => {
+  if (!node) return { left: '0px', top: '0px' }
+
+  const scale = canvasStore.canvas?.ds?.scale ?? 1
+  const nodeWidth = node.size[0] * scale
+  const nodeHeight = node.size[1] * scale
+  const [nodeLeft, nodeTop] = comfyApp.canvasPosToClientPos(node.pos)
+
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+
+  const menuWidth = 200
+  const menuHeight = Math.min(nodesInputs.value.length * 40, 300)
+
+  let left = nodeLeft + nodeWidth + 10
+  let top = nodeTop + nodeHeight / 2 - menuHeight / 2
+
+  if (left + menuWidth > viewportWidth) {
+    left = nodeLeft - menuWidth - 10 // 左
+  }
+
+  // 上
+  if (top < 10) {
+    top = 10
+  }
+
+  // 下
+  if (top + menuHeight > viewportHeight) {
+    top = viewportHeight - menuHeight - 10
+  }
+
+  return {
+    left: `${left}px`,
+    top: `${top}px`
+  }
+}
+
+/** 显示菜单 */
+const handleOutputMenuShow = (ev: CustomEvent) => {
+  const {
+    detail: { node, outputInfo }
+  } = ev
+
+  clickedNode.value = node
+  nodesInputs.value = getRelatedNodesByOutputType(
+    outputInfo.type,
+    nodeDefStore.utilsNodes
+  ).slice(0, 10) // nodeDefStore.visibleNodeDefs
+
+  setTimeout(() => {
+    nextTick(() => {
+      outputMenuPosition.value = calculateMenuPosition(node)
+      showOutputMenu.value = true
+    })
+  }, 0)
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (
+    showOutputMenu.value &&
+    outMenuRef.value &&
+    !outMenuRef.value.contains(event.target as Node)
+  ) {
+    clickedNode.value = null
+    showOutputMenu.value = false
+  }
+}
+
+const handleNodesInput = async (input) => {
+  if (!clickedNode.value) return
+
+  useLitegraphService().addNodeOnGraph(input)
+  showOutputMenu.value = false
+}
+
+useEventListener(document, 'showOutputMenu', handleOutputMenuShow)
+useEventListener(document, 'click', handleClickOutside)
+
+onUnmounted(() => {
+  document.removeEventListener('showOutputMenu', handleOutputMenuShow)
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style scoped>
@@ -312,5 +459,42 @@ const deleteNode = (nodeId: number) => {
   left: 0;
   top: 0;
   cursor: pointer;
+}
+.output-menu-container {
+  position: fixed;
+  z-index: 1000;
+  background: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 0.6rem;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  min-width: 200px;
+  max-width: 300px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.5rem;
+}
+.output-menu-container .menu-item {
+  border-bottom: 1px solid #eee;
+}
+.output-menu-container .menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.nis_item {
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.custom-context-menu li {
+  height: 2rem;
+  font-size: 0.8rem;
+  color: rgb(51, 51, 51);
+  line-height: 2rem;
 }
 </style>

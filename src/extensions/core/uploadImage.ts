@@ -1,6 +1,6 @@
 import { ComfyNodeDef, InputSpec, isComboInputSpecV1 } from '@/types/apiTypes'
 
-import { app } from '../../scripts/app'
+import { app } from '@/scripts/app'
 
 // Adds an upload button to the nodes
 

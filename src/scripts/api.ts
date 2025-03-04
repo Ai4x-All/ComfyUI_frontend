@@ -327,7 +327,7 @@ export class ComfyApi extends EventTarget {
 
     this.socket.addEventListener('error', () => {
       if (this.socket) this.socket.close()
-      // this.#disconnect()
+      // return this.#disconnect() // 注
 
       if (!isReconnect && !opened) {
         this.#pollQueue()
@@ -335,7 +335,7 @@ export class ComfyApi extends EventTarget {
     })
 
     this.socket.addEventListener('close', () => {
-      // this.#disconnect()
+      // return this.#disconnect() // 注
 
       setTimeout(() => {
         this.socket = null
@@ -484,8 +484,17 @@ export class ComfyApi extends EventTarget {
   async getNodeDefs({ validate = false }: { validate?: boolean } = {}): Promise<
     Record<string, ComfyNodeDef>
   > {
+    // return {} // 注
     const resp = await this.fetchApi('/object_info', { cache: 'no-store' })
     const objectInfoUnsafe = await resp.json()
+
+    /*const newObj = {};
+    const keys = Object.keys(objectInfoUnsafe);
+    for (let i = 0; i < Math.min(270, keys.length); i++) {
+      const key = keys[i];
+      newObj[key] = objectInfoUnsafe[key];
+    }*/
+
     if (!validate) {
       return objectInfoUnsafe
     }
